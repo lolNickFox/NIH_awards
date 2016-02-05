@@ -141,6 +141,11 @@ summarySEwithin <- function(data=NULL, measurevar, betweenvars=NULL, withinvars=
   merge(datac, ndatac)
 }
 
+asNumeric <- function(x) as.numeric(as.character(x))
+factorsNumeric <- function(d) modifyList(d, lapply(d[, sapply(d, is.factor)],   
+                                                   asNumeric))
+#functions that allow easy conversions of factors to numeric
+
 #FOR MAC, use the WD below:
 setwd("~/Dropbox/GitHub_master/data/NIH_awards")
 
@@ -148,32 +153,47 @@ setwd("~/Dropbox/GitHub_master/data/NIH_awards")
 
 ```{r echo = FALSE}
 
-NIH_2013 <- read.csv("RePORTER_PRJ_C_FY2013.csv", header = TRUE)
+a <- read.csv("RePORTER_PRJ_C_FY2013.csv", header = TRUE, stringsAsFactors = FALSE)
 #load in all NIH award data for 2013
 
-NIH_2013_R01 <- NIH_2013 %>% 
+b <- a %>% 
   filter(ACTIVITY == "R01")
 #makes a new dataframe with just R01 award data
 
-NIH_2013_R01 <- NIH_2013_R01 %>% 
-  tidyr::separate(PI_IDS, c("PI_1", "PI_2", "PI_3", "PI_4", "PI_5", "PI_6", "PI_7", "PI_8", "PI_9", "PI_10", "PI_11"))
-#separates the PI_ID column into a column for each PI
+b <- b %>% 
+  separate(col = PI_IDS, into = c("PI_1", "PI_2", "PI_3", "PI_4", "PI_5", "PI_6", "PI_7", "PI_8", "PI_9", "PI_10", "PI_11"), sep = "\\;")
 
-NIH_2013_R01[NIH_2013_R01 == ""] <- NA
-NIH_2013_R01[is.na(NIH_2013_R01)] <- 0
+b[b == ""] <- NA
+b[is.na(b)] <- 0
 #replaces blank cells with NA
 
-NIH_2013_R01_ONE_PI <- NIH_2013_R01 %>% 
+b <- as.data.frame(sapply(b, gsub, pattern = "contact", replacement = ""), stringsAsFactors = FALSE)
+#removes contact information from the PI columns
+
+b$TOTAL_COST <- as.numeric(as.character(b$TOTAL_COST))
+#converts TOTAL_COST from factor to numeric
+
+b <- b %>% 
+  mutate(SUM_COST = sum(TOTAL_COST))
+
+b_one <- b %>% 
   filter(PI_2 == 0) %>% 
   mutate(SUM_COST_ONE_PI = sum(TOTAL_COST))
 #generates the sum cost of awards for R01s with only 1 PI author
 
-NIH_2013_R01_MULTI_PI <- NIH_2013_R01 %>% 
+b_multi <- b %>% 
   dplyr::filter(PI_2 != 0) %>% 
   dplyr::mutate(SUM_COST_MULTI_PI = sum(TOTAL_COST))
 #generates the sum cost of awards for R01s with more than one author
 
-
 ```
 
-test with csv in folder
+So now we know that there are:
+25813 total R01s funded in 2013
+22609 with only 1 PI
+3204 with more than one PI
+
+```{r echo = FALSE}
+
+b %>%
+  summarize(n_distinct(PI_1), length(PI_1), n_distinct(PI_2), length(PI_2))
