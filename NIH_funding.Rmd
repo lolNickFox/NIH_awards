@@ -178,12 +178,12 @@ b <- b %>%
 
 b_one <- b %>% 
   filter(PI_2 == 0) %>% 
-  mutate(SUM_COST_ONE_PI = sum(TOTAL_COST))
+  mutate(SUM_COST_ONE_PI = sum(TOTAL_COST), PERCENT_ONE_PI = (SUM_COST_ONE_PI / SUM_COST) * 100)
 #generates the sum cost of awards for R01s with only 1 PI author
 
 b_multi <- b %>% 
   dplyr::filter(PI_2 != 0) %>% 
-  dplyr::mutate(SUM_COST_MULTI_PI = sum(TOTAL_COST))
+  dplyr::mutate(SUM_COST_MULTI_PI = sum(TOTAL_COST), PERCENT_MULTI_PI = (SUM_COST_MULTI_PI / SUM_COST) * 100)
 #generates the sum cost of awards for R01s with more than one author
 
 ```
