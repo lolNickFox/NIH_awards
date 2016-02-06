@@ -11,12 +11,14 @@ The goal of this rmd file is to develop code to quickly accumulate the relevant 
 #install.packages("dplyr")
 #install.packages("ggplot2")
 #install.packages("tidyr")
+#install.packages("data.table")
 
 
 
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(data.table)
 #loads in all packages used in this analysis.  Find install code above.
 
 
@@ -164,7 +166,7 @@ b <- b %>%
   separate(col = PI_IDS, into = c("PI_1", "PI_2", "PI_3", "PI_4", "PI_5", "PI_6", "PI_7", "PI_8", "PI_9", "PI_10", "PI_11"), sep = "\\;")
 
 b[b == ""] <- NA
-b[is.na(b)] <- 0
+#[is.na(b)] <- 0
 #replaces blank cells with NA
 
 b <- as.data.frame(sapply(b, gsub, pattern = "contact", replacement = ""), stringsAsFactors = FALSE)
@@ -173,18 +175,32 @@ b <- as.data.frame(sapply(b, gsub, pattern = "contact", replacement = ""), strin
 b$TOTAL_COST <- as.numeric(as.character(b$TOTAL_COST))
 #converts TOTAL_COST from factor to numeric
 
-b <- b %>% 
+b <- b %>%
+  filter(!is.na(TOTAL_COST)) %>% 
   mutate(SUM_COST = sum(TOTAL_COST))
 
 b_one <- b %>% 
-  filter(PI_2 == 0) %>% 
+  filter(is.na(PI_2)) %>% 
   mutate(SUM_COST_ONE_PI = sum(TOTAL_COST), PERCENT_ONE_PI = (SUM_COST_ONE_PI / SUM_COST) * 100)
 #generates the sum cost of awards for R01s with only 1 PI author
 
-b_multi <- b %>% 
-  dplyr::filter(PI_2 != 0) %>% 
-  dplyr::mutate(SUM_COST_MULTI_PI = sum(TOTAL_COST), PERCENT_MULTI_PI = (SUM_COST_MULTI_PI / SUM_COST) * 100)
-#generates the sum cost of awards for R01s with more than one author
+b_all_dup <- b %>%
+  group_by(PI_1, PI_2, PI_3, PI_4, PI_5, PI_6) %>%
+  filter( n() > 1 )
+
+b_all_dup <- b_all_dup %>%
+  group_by(ACTIVITY) %>% 
+  mutate(DUP_COST = sum(TOTAL_COST), PERCENT_DUP_COST = (DUP_COST / SUM_COST) * 100)
+
+
+b %>% 
+  ggplot(aes(x = ORG_DEPT, y = TOTAL_COST)) + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+b %>% 
+  ggplot(aes(x = ORG_DEPT, y = TOTAL_COST)) + geom_point() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+b %>% 
+  ggplot(aes(x = IC_NAME, y = TOTAL_COST)) + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
@@ -193,7 +209,3 @@ So now we know that there are:
 22609 with only 1 PI
 3204 with more than one PI
 
-```{r echo = FALSE}
-
-b %>%
-  summarize(n_distinct(PI_1), length(PI_1), n_distinct(PI_2), length(PI_2))
