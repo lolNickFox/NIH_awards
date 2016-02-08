@@ -1,7 +1,7 @@
 ---
-title: "NIH_funds_FY2013"
+title: "NIH_funds_FY2012"
 author: "Nick_Fox"
-date: "February 4, 2016"
+date: "February 8, 2016"
 output: html_document
 ---
 
@@ -155,7 +155,7 @@ setwd("~/Dropbox/GitHub_master/data/NIH_awards")
 
 ```{r echo = FALSE}
 
-a <- read.csv("RePORTER_PRJ_C_FY2013.csv", header = TRUE, stringsAsFactors = FALSE)
+a <- read.csv("RePORTER_PRJ_C_FY2012.csv", header = TRUE, stringsAsFactors = FALSE)
 #load in all NIH award data for the fiscal year of choice (in file name - FYXXXX)
 
 b <- a %>% 
@@ -213,7 +213,8 @@ c <- b %>%
   group_by(NUMBER_OF_R01s) %>% 
   mutate(COST_NUMBER_OF_R01s = sum(TOTAL_COST)) %>% 
   distinct(NUMBER_OF_R01s) %>% 
-  select(NUMBER_OF_R01s, COST_NUMBER_OF_R01s)
+  select(NUMBER_OF_R01s, COST_NUMBER_OF_R01s) %>% 
+  arrange(NUMBER_OF_R01s)
 #calculates how much money goes to PIs with that number of grants
 #example - ~2.6 billion dollars went to PIs who received funding from 2 R01s in FY2013
 #this is also the best way to glean this data - just view data frame c.
