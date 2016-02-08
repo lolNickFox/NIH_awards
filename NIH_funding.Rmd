@@ -193,30 +193,46 @@ b_all_dup <- b_all_dup %>%
   mutate(DUP_COST = sum(TOTAL_COST), PERCENT_DUP_COST = (DUP_COST / SUM_COST) * 100)
 
 
-test <- b %>% 
-  mutate(PI_1_DUMMY = ifelse(!is.na(PI_1), 1, 0), PI_2_DUMMY = ifelse(!is.na(PI_2), 1, 0))
+b <- b %>% 
+  mutate(PI_1_DUMMY = ifelse(!is.na(PI_1), 1, 0), PI_2_DUMMY = ifelse(!is.na(PI_2), 1, 0), PI_3_DUMMY = ifelse(!is.na(PI_3), 1, 0), PI_4_DUMMY = ifelse(!is.na(PI_4), 1, 0), PI_5_DUMMY = ifelse(!is.na(PI_5), 1, 0), PI_6_DUMMY = ifelse(!is.na(PI_6), 1, 0), PI_7_DUMMY = ifelse(!is.na(PI_7), 1, 0), PI_8_DUMMY = ifelse(!is.na(PI_8), 1, 0), PI_9_DUMMY = ifelse(!is.na(PI_9), 1, 0), PI_10_DUMMY = ifelse(!is.na(PI_10), 1, 0), PI_11_DUMMY = ifelse(!is.na(PI_11), 1, 0), TOTAL_PIS = PI_1_DUMMY + PI_2_DUMMY + PI_3_DUMMY + PI_4_DUMMY + PI_5_DUMMY + PI_6_DUMMY + PI_7_DUMMY + PI_8_DUMMY + PI_9_DUMMY + PI_10_DUMMY + PI_11_DUMMY)
+#this big mess dummy codes each PI position on the R01, and then adds them all up to get a total number of PIs per grant
+
 ```
 
+```{r echo = FALSE}
+b %>% 
+  ggplot(aes(x = TOTAL_PIS, y = TOTAL_COST)) + geom_point(position = "jitter", alpha = 0.4, size = 2.5) + stat_smooth(method = "lm", size = 2, alpha = 0.4) + ggtitle("Fig.3a - Change in body weight over stress protocol") + theme_bw() + theme(axis.line = element_line(colour = "black"), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_blank(), panel.background = element_blank())
+
+lm_PI_COST <- lm(TOTAL_COST ~ TOTAL_PIS + ORG_DEPT + ORG_STATE + ED_INST_TYPE, data = b)
+summary(lm_PI_COST)
+
+```
+
+```{r echo = FALSE}
+
+test <- b %>% 
+  group_by(PI_1) %>% 
+  mutate(MONEY_PER_PI = sum(TOTAL_COST))
+
+
+test <- test %>% 
+  group_by(PI_1, ACTIVITY) %>% 
+  mutate(NUMBER_OF_R01s = n())
 
 
 
-
-
-
-
-
-
+```
 
 Some figures:
 ```{r echo = FALSE}
-b %>% 
-  ggplot(aes(x = ORG_DEPT, y = TOTAL_COST)) + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-b %>% 
-  ggplot(aes(x = ORG_DEPT, y = TOTAL_COST)) + geom_point() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-b_all_dup %>% 
-  ggplot(aes(x = ORG_DEPT, y = DUP_COST)) + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# b %>% 
+#   ggplot(aes(x = ORG_DEPT, y = TOTAL_COST)) + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# 
+# b %>% 
+#   ggplot(aes(x = ORG_DEPT, y = TOTAL_COST)) + geom_point() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# 
+# b_all_dup %>% 
+#   ggplot(aes(x = ORG_DEPT, y = DUP_COST)) + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
