@@ -1,5 +1,5 @@
 ---
-title: "NIH_funds"
+title: "NIH_funds_FY2013"
 author: "Nick_Fox"
 date: "February 4, 2016"
 output: html_document
@@ -210,16 +210,20 @@ summary(lm_PI_COST)
 
 ```{r echo = FALSE}
 
-test <- b %>% 
+b <- b %>% 
   group_by(PI_1) %>% 
   mutate(MONEY_PER_PI = sum(TOTAL_COST))
 
 
-test <- test %>% 
+b <- b %>% 
   group_by(PI_1, ACTIVITY) %>% 
   mutate(NUMBER_OF_R01s = n())
 
+table(b$NUMBER_OF_R01s)
 
+table(b$ACTIVITY)
+
+table(b$SUM_COST)
 
 ```
 
@@ -235,9 +239,3 @@ Some figures:
 #   ggplot(aes(x = ORG_DEPT, y = DUP_COST)) + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
-
-So now we know that there are:
-25813 total R01s funded in 2013
-22609 with only 1 PI
-3204 with more than one PI
-
