@@ -193,14 +193,30 @@ b_all_dup <- b_all_dup %>%
   mutate(DUP_COST = sum(TOTAL_COST), PERCENT_DUP_COST = (DUP_COST / SUM_COST) * 100)
 
 
+test <- b %>% 
+  mutate(PI_1_DUMMY = ifelse(!is.na(PI_1), 1, 0), PI_2_DUMMY = ifelse(!is.na(PI_2), 1, 0))
+```
+
+
+
+
+
+
+
+
+
+
+
+Some figures:
+```{r echo = FALSE}
 b %>% 
   ggplot(aes(x = ORG_DEPT, y = TOTAL_COST)) + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 b %>% 
   ggplot(aes(x = ORG_DEPT, y = TOTAL_COST)) + geom_point() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-b %>% 
-  ggplot(aes(x = IC_NAME, y = TOTAL_COST)) + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+b_all_dup %>% 
+  ggplot(aes(x = ORG_DEPT, y = DUP_COST)) + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
