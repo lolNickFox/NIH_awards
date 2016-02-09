@@ -1,4 +1,11 @@
 ---
+title: "NIH_funds_FY2010"
+author: "Nick_Fox"
+date: "February 8, 2016"
+output: html_document
+---
+
+---
 title: "NIH_funds_FY2013"
 author: "Nick_Fox"
 date: "February 4, 2016"
@@ -155,7 +162,7 @@ setwd("~/Dropbox/GitHub_master/data/NIH_awards")
 
 ```{r echo = FALSE}
 
-a <- read.csv("RePORTER_PRJ_C_FY2013.csv", header = TRUE, stringsAsFactors = FALSE)
+a <- read.csv("RePORTER_PRJ_C_FY2010.csv", header = TRUE, stringsAsFactors = FALSE)
 #load in all NIH award data for the fiscal year of choice (in file name - FYXXXX)
 
 b <- a %>% 
