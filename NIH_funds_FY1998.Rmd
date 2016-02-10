@@ -1,7 +1,7 @@
 ---
-title: "NIH_funds_FY2013"
+title: "NIH_funds_FY1998"
 author: "Nick_Fox"
-date: "February 4, 2016"
+date: "February 10, 2016"
 output: html_document
 ---
 
@@ -155,7 +155,7 @@ setwd("~/Dropbox/GitHub_master/data/NIH_awards")
 
 ```{r echo = FALSE}
 
-a <- read.csv("RePORTER_PRJ_C_FY2013.csv", header = TRUE, stringsAsFactors = FALSE)
+a <- read.csv("RePORTER_PRJ_C_FY1998.csv", header = TRUE, stringsAsFactors = FALSE)
 #load in all NIH award data for the fiscal year of choice (in file name - FYXXXX)
 
 b <- a %>% 
@@ -176,9 +176,9 @@ b <- as.data.frame(sapply(b, gsub, pattern = "contact", replacement = ""), strin
 b$TOTAL_COST <- as.numeric(as.character(b$TOTAL_COST))
 #converts TOTAL_COST from factor to numeric
 
-b <- b %>%
-  filter(!is.na(TOTAL_COST)) %>% 
-  mutate(SUM_COST = sum(TOTAL_COST))
+#b <- b %>%
+#  filter(!is.na(TOTAL_COST)) %>% 
+#  mutate(SUM_COST = sum(TOTAL_COST))
 #computes the total amount dispersed in R01s in that fiscal year and makes a new column: SUM_COST
 
 b <- b %>% 
@@ -188,12 +188,12 @@ b <- b %>%
 ```
 
 ```{r echo = FALSE}
-b %>% 
-  ggplot(aes(x = TOTAL_PIS, y = TOTAL_COST)) + geom_point(position = "jitter", alpha = 0.4, size = 2.5) + stat_smooth(method = "lm", size = 2, alpha = 0.4) + ggtitle("Value of R01 funding per PI author") + theme_bw() + theme(axis.line = element_line(colour = "black"), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_blank(), panel.background = element_blank())
+#b %>% 
+  #ggplot(aes(x = TOTAL_PIS, y = TOTAL_COST)) + geom_point(position = "jitter", alpha = 0.4, size = 2.5) + stat_smooth(method = "lm", size = 2, alpha = 0.4) + ggtitle("Value of R01 funding per PI author") + theme_bw() + theme(axis.line = element_line(colour = "black"), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_blank(), panel.background = element_blank())
 #makes figure displaying the amount of a grant (TOTAL_COST) against the number of PIs on that R01
 
-lm_PI_COST <- lm(TOTAL_COST ~ TOTAL_PIS + ORG_DEPT + ORG_STATE + ED_INST_TYPE, data = b)
-summary(lm_PI_COST)
+#lm_PI_COST <- lm(TOTAL_COST ~ TOTAL_PIS + ORG_DEPT + ORG_STATE + ED_INST_TYPE, data = b)
+#summary(lm_PI_COST)
 #linear regression model for TOTAL_COST regressed on TOTAL_PIS controlling for department type, state, and institution type.
 ```
 
