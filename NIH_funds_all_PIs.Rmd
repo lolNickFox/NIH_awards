@@ -166,7 +166,7 @@ b <- a %>%
 
 
 c <- b %>% 
-  select(PI_IDS, TOTAL_COST)
+  select(APPLICATION_ID, PI_IDS, TOTAL_COST)
 
 c <- c %>% 
   separate(col = PI_IDS, into = c("PI_1", "PI_2", "PI_3", "PI_4", "PI_5", "PI_6", "PI_7", "PI_8", "PI_9", "PI_10", "PI_11"), sep = "\\;")
@@ -180,60 +180,71 @@ c$TOTAL_COST <- as.numeric(as.character(c$TOTAL_COST))
 c <- c %>% 
   mutate(PI_1_DUMMY = ifelse(!is.na(PI_1), 1, 0), PI_2_DUMMY = ifelse(!is.na(PI_2), 1, 0), PI_3_DUMMY = ifelse(!is.na(PI_3), 1, 0), PI_4_DUMMY = ifelse(!is.na(PI_4), 1, 0), PI_5_DUMMY = ifelse(!is.na(PI_5), 1, 0), PI_6_DUMMY = ifelse(!is.na(PI_6), 1, 0), PI_7_DUMMY = ifelse(!is.na(PI_7), 1, 0), PI_8_DUMMY = ifelse(!is.na(PI_8), 1, 0), PI_9_DUMMY = ifelse(!is.na(PI_9), 1, 0), PI_10_DUMMY = ifelse(!is.na(PI_10), 1, 0), PI_11_DUMMY = ifelse(!is.na(PI_11), 1, 0), TOTAL_PIS = PI_1_DUMMY + PI_2_DUMMY + PI_3_DUMMY + PI_4_DUMMY + PI_5_DUMMY + PI_6_DUMMY + PI_7_DUMMY + PI_8_DUMMY + PI_9_DUMMY + PI_10_DUMMY + PI_11_DUMMY)
 
+c <- c %>%
+  filter(!is.na(TOTAL_COST)) %>% 
+  mutate(TOTAL_DOLLARS = sum(TOTAL_COST), AVERAGE_PER_PI = TOTAL_DOLLARS / sum(TOTAL_PIS))
+
 c <- c %>% 
+  group_by(APPLICATION_ID) %>% 
   mutate(COST_PER_PI = TOTAL_COST / TOTAL_PIS)
 
-c <- c %>% 
-  filter(!is.na(COST_PER_PI)) %>% 
-  mutate(TOTAL_DISPERSED = sum(COST_PER_PI))
-
-PI_1 <- c %>% 
-  mutate(PI = PI_1) %>% 
+PI_1 <- c %>%
+  mutate(PI = PI_1) %>%
+  group_by(PI) %>% 
   select(PI, COST_PER_PI)
 
 PI_2 <- c %>%
   filter(!is.na(PI_2)) %>% 
-  mutate(PI = PI_2) %>% 
+  mutate(PI = PI_2) %>%
+  group_by(PI) %>% 
   select(PI, COST_PER_PI)
 
 PI_3 <- c %>% 
   filter(!is.na(PI_3)) %>%
-  mutate(PI = PI_3) %>% 
+  mutate(PI = PI_3) %>%
+  group_by(PI) %>% 
   select(PI, COST_PER_PI)
 
 PI_4 <- c %>% 
   filter(!is.na(PI_4)) %>%
-  mutate(PI = PI_4) %>% 
+  mutate(PI = PI_4) %>%
+  group_by(PI) %>% 
   select(PI, COST_PER_PI)
 
 PI_5 <- c %>% 
   filter(!is.na(PI_5)) %>%
-  mutate(PI = PI_5) %>% 
+  mutate(PI = PI_5) %>%
+  group_by(PI) %>% 
   select(PI, COST_PER_PI)
 
 PI_6 <- c %>% 
   filter(!is.na(PI_6)) %>%
   mutate(PI = PI_6) %>% 
+  group_by(PI) %>% 
   select(PI, COST_PER_PI)
 
 PI_7 <- c %>% 
   filter(!is.na(PI_7)) %>%
-  mutate(PI = PI_7) %>% 
+  mutate(PI = PI_7) %>%
+  group_by(PI) %>% 
   select(PI, COST_PER_PI)
 
 PI_8 <- c %>% 
   filter(!is.na(PI_8)) %>%
-  mutate(PI = PI_8) %>% 
+  mutate(PI = PI_8) %>%
+  group_by(PI) %>% 
   select(PI, COST_PER_PI)
 
 PI_9 <- c %>% 
   filter(!is.na(PI_9)) %>%
   mutate(PI = PI_9) %>% 
+  group_by(PI) %>% 
   select(PI, COST_PER_PI)
 
 PI_10 <- c %>% 
   filter(!is.na(PI_10)) %>%
-  mutate(PI = PI_10) %>% 
+  mutate(PI = PI_10) %>%
+  group_by(PI) %>% 
   select(PI, COST_PER_PI)
 
 ```
@@ -261,9 +272,9 @@ PI_ALL %>%
 
 table(PI_ALL$NUMBER_OF_GRANTS)
 
-table(b$ACTIVITY)
+nrow(PI_ALL)
 
-table(c$TOTAL_DISPERSED)
+table(c$TOTAL_DOLLARS)
 
 d <- PI_ALL %>% 
   group_by(NUMBER_OF_GRANTS) %>% 
