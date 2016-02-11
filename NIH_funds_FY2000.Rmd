@@ -12,6 +12,7 @@ The goal of this rmd file is to develop code to quickly accumulate the relevant 
 #install.packages("ggplot2")
 #install.packages("tidyr")
 #install.packages("data.table")
+#install.packages("stringr")
 
 
 
@@ -19,6 +20,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(data.table)
+library(stringr)
 #loads in all packages used in this analysis.  Find install code above.
 
 
@@ -162,85 +164,127 @@ b <- a %>%
   filter(ACTIVITY == "R01")
 #makes a new dataframe with just R01 award data
 
-b <- b %>% 
-  separate(col = PI_IDS, into = c("PI_1", "PI_2", "PI_3", "PI_4", "PI_5", "PI_6", "PI_7", "PI_8", "PI_9", "PI_10", "PI_11"), sep = "\\;")
-#makes a new column for each PI on an R01
-
-b[b == ""] <- NA
-#[is.na(b)] <- 0
-#replaces blank cells with NA (could further turn NAs into zeroes with the second line)
-
-b <- as.data.frame(sapply(b, gsub, pattern = "contact", replacement = ""), stringsAsFactors = FALSE)
-#removes "contact" information from the PI columns
-
-b$TOTAL_COST <- as.numeric(as.character(b$TOTAL_COST))
-#converts TOTAL_COST from factor to numeric
-
-b <- b %>%
-  filter(!is.na(TOTAL_COST)) %>% 
-  mutate(SUM_COST = sum(TOTAL_COST))
-#computes the total amount dispersed in R01s in that fiscal year and makes a new column: SUM_COST
-
-b <- b %>% 
-  mutate(PI_1_DUMMY = ifelse(!is.na(PI_1), 1, 0), PI_2_DUMMY = ifelse(!is.na(PI_2), 1, 0), PI_3_DUMMY = ifelse(!is.na(PI_3), 1, 0), PI_4_DUMMY = ifelse(!is.na(PI_4), 1, 0), PI_5_DUMMY = ifelse(!is.na(PI_5), 1, 0), PI_6_DUMMY = ifelse(!is.na(PI_6), 1, 0), PI_7_DUMMY = ifelse(!is.na(PI_7), 1, 0), PI_8_DUMMY = ifelse(!is.na(PI_8), 1, 0), PI_9_DUMMY = ifelse(!is.na(PI_9), 1, 0), PI_10_DUMMY = ifelse(!is.na(PI_10), 1, 0), PI_11_DUMMY = ifelse(!is.na(PI_11), 1, 0), TOTAL_PIS = PI_1_DUMMY + PI_2_DUMMY + PI_3_DUMMY + PI_4_DUMMY + PI_5_DUMMY + PI_6_DUMMY + PI_7_DUMMY + PI_8_DUMMY + PI_9_DUMMY + PI_10_DUMMY + PI_11_DUMMY)
-#this big mess dummy codes each PI position on the R01, and then adds them all up to get a total number of PIs per grant
-
-```
-
-```{r echo = FALSE}
-b %>% 
-  ggplot(aes(x = TOTAL_PIS, y = TOTAL_COST)) + geom_point(position = "jitter", alpha = 0.4, size = 2.5) + stat_smooth(method = "lm", size = 2, alpha = 0.4) + ggtitle("Value of R01 funding per PI author") + theme_bw() + theme(axis.line = element_line(colour = "black"), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_blank(), panel.background = element_blank())
-#makes figure displaying the amount of a grant (TOTAL_COST) against the number of PIs on that R01
-
-lm_PI_COST <- lm(TOTAL_COST ~ TOTAL_PIS + ORG_DEPT + ORG_STATE + ED_INST_TYPE, data = b)
-summary(lm_PI_COST)
-#linear regression model for TOTAL_COST regressed on TOTAL_PIS controlling for department type, state, and institution type.
-```
-
-```{r echo = FALSE}
-
-b <- b %>% 
-  group_by(PI_1) %>% 
-  mutate(MONEY_PER_PI = sum(TOTAL_COST))
-#calculates R01 money dispersed to each PI
-
-b <- b %>% 
-  group_by(PI_1, ACTIVITY) %>% 
-  mutate(NUMBER_OF_R01s = n())
-#counts number of R01s going to each PI
 
 c <- b %>% 
-  group_by(NUMBER_OF_R01s) %>% 
-  mutate(COST_NUMBER_OF_R01s = sum(TOTAL_COST)) %>% 
-  distinct(NUMBER_OF_R01s) %>% 
-  select(NUMBER_OF_R01s, COST_NUMBER_OF_R01s) %>% 
-  arrange(NUMBER_OF_R01s)
-#calculates how much money goes to PIs with that number of grants
-#example - ~2.6 billion dollars went to PIs who received funding from 2 R01s in FY2013
-#this is also the best way to glean this data - just view data frame c.
+  select(APPLICATION_ID, PI_IDS, TOTAL_COST)
 
-table(b$NUMBER_OF_R01s)
-#prints table of frequencies for each number of grants (how many PIs have how many grants)
+c <- c %>% 
+  separate(col = PI_IDS, into = c("PI_1", "PI_2", "PI_3", "PI_4", "PI_5", "PI_6", "PI_7", "PI_8", "PI_9", "PI_10", "PI_11"), sep = "\\;")
 
-table(b$ACTIVITY)
-#prints total number of R01s funded in given fiscal year
+c[c == ""] <- NA
 
-table(b$SUM_COST)
-#total amount of money dispersed through R01s in given fiscal year
+c <- as.data.frame(sapply(c, gsub, pattern = "(.contact.)", replacement = ""), stringsAsFactors = FALSE)
 
-print(c)
-#prints the data frame with COST_NUMBER_OF_R01
+c$TOTAL_COST <- as.numeric(as.character(c$TOTAL_COST))
+
+c <- c %>% 
+  mutate(PI_1_DUMMY = ifelse(!is.na(PI_1), 1, 0), PI_2_DUMMY = ifelse(!is.na(PI_2), 1, 0), PI_3_DUMMY = ifelse(!is.na(PI_3), 1, 0), PI_4_DUMMY = ifelse(!is.na(PI_4), 1, 0), PI_5_DUMMY = ifelse(!is.na(PI_5), 1, 0), PI_6_DUMMY = ifelse(!is.na(PI_6), 1, 0), PI_7_DUMMY = ifelse(!is.na(PI_7), 1, 0), PI_8_DUMMY = ifelse(!is.na(PI_8), 1, 0), PI_9_DUMMY = ifelse(!is.na(PI_9), 1, 0), PI_10_DUMMY = ifelse(!is.na(PI_10), 1, 0), PI_11_DUMMY = ifelse(!is.na(PI_11), 1, 0), TOTAL_PIS = PI_1_DUMMY + PI_2_DUMMY + PI_3_DUMMY + PI_4_DUMMY + PI_5_DUMMY + PI_6_DUMMY + PI_7_DUMMY + PI_8_DUMMY + PI_9_DUMMY + PI_10_DUMMY + PI_11_DUMMY)
+
+c <- c %>%
+  filter(!is.na(TOTAL_COST)) %>% 
+  mutate(TOTAL_DOLLARS = sum(TOTAL_COST), AVERAGE_PER_PI = TOTAL_DOLLARS / sum(TOTAL_PIS))
+
+c <- c %>% 
+  group_by(APPLICATION_ID) %>% 
+  mutate(COST_PER_PI = TOTAL_COST / TOTAL_PIS)
+
+PI_1 <- c %>%
+  mutate(PI = PI_1) %>%
+  group_by(PI) %>% 
+  select(PI, COST_PER_PI)
+
+PI_2 <- c %>%
+  filter(!is.na(PI_2)) %>% 
+  mutate(PI = PI_2) %>%
+  group_by(PI) %>% 
+  select(PI, COST_PER_PI)
+
+PI_3 <- c %>% 
+  filter(!is.na(PI_3)) %>%
+  mutate(PI = PI_3) %>%
+  group_by(PI) %>% 
+  select(PI, COST_PER_PI)
+
+PI_4 <- c %>% 
+  filter(!is.na(PI_4)) %>%
+  mutate(PI = PI_4) %>%
+  group_by(PI) %>% 
+  select(PI, COST_PER_PI)
+
+PI_5 <- c %>% 
+  filter(!is.na(PI_5)) %>%
+  mutate(PI = PI_5) %>%
+  group_by(PI) %>% 
+  select(PI, COST_PER_PI)
+
+PI_6 <- c %>% 
+  filter(!is.na(PI_6)) %>%
+  mutate(PI = PI_6) %>% 
+  group_by(PI) %>% 
+  select(PI, COST_PER_PI)
+
+PI_7 <- c %>% 
+  filter(!is.na(PI_7)) %>%
+  mutate(PI = PI_7) %>%
+  group_by(PI) %>% 
+  select(PI, COST_PER_PI)
+
+PI_8 <- c %>% 
+  filter(!is.na(PI_8)) %>%
+  mutate(PI = PI_8) %>%
+  group_by(PI) %>% 
+  select(PI, COST_PER_PI)
+
+PI_9 <- c %>% 
+  filter(!is.na(PI_9)) %>%
+  mutate(PI = PI_9) %>% 
+  group_by(PI) %>% 
+  select(PI, COST_PER_PI)
+
+PI_10 <- c %>% 
+  filter(!is.na(PI_10)) %>%
+  mutate(PI = PI_10) %>%
+  group_by(PI) %>% 
+  select(PI, COST_PER_PI)
+
 ```
 
-Some figures:
 ```{r echo = FALSE}
-# b %>% 
-#   ggplot(aes(x = ORG_DEPT, y = TOTAL_COST)) + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
-# 
-# b %>% 
-#   ggplot(aes(x = ORG_DEPT, y = TOTAL_COST)) + geom_point() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
-# 
-# b_all_dup %>% 
-#   ggplot(aes(x = ORG_DEPT, y = DUP_COST)) + geom_bar(stat = "identity") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+PI_ALL <- bind_rows(PI_1, PI_2, PI_3, PI_4, PI_5, PI_6, PI_7, PI_8, PI_9, PI_10)
 
 ```
+
+```{r echo = FALSE}
+
+PI_ALL <- PI_ALL %>%
+  group_by(PI) %>% 
+  mutate(SUM_COST_RECEIVED = sum(COST_PER_PI), NUMBER_OF_GRANTS = n()) %>% 
+  distinct(PI)
+
+```
+
+
+```{r echo = FALSE}
+
+PI_ALL %>% 
+  ggplot(aes(x = NUMBER_OF_GRANTS, y = SUM_COST_RECEIVED)) + geom_point() + geom_smooth(method = "lm")
+
+table(PI_ALL$NUMBER_OF_GRANTS)
+
+nrow(PI_ALL)
+
+table(c$TOTAL_DOLLARS)
+
+d <- PI_ALL %>% 
+  group_by(NUMBER_OF_GRANTS) %>% 
+  mutate(COST_NUMBER_OF_R01s = sum(SUM_COST_RECEIVED)) %>% 
+  distinct(NUMBER_OF_GRANTS) %>% 
+  select(NUMBER_OF_GRANTS, COST_NUMBER_OF_R01s) %>% 
+  arrange(NUMBER_OF_GRANTS)
+  
+print(d)
+
+
+```
+
