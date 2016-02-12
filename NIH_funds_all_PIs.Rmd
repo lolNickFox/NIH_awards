@@ -160,9 +160,11 @@ setwd("~/Dropbox/GitHub_master/data/NIH_awards")
 a <- read.csv("RePORTER_PRJ_C_FY2013.csv", header = TRUE, stringsAsFactors = FALSE)
 #load in all NIH award data for the fiscal year of choice (in file name - FYXXXX)
 
+filter_target <- c("R01", "R23", "R29", "R37")
+
 b <- a %>% 
-  filter(ACTIVITY == "R01")
-#makes a new dataframe with just R01 award data
+  filter(ACTIVITY %in% filter_target)
+#makes a new dataframe with just R01-equivalent award data
 
 
 c <- b %>% 
@@ -285,6 +287,9 @@ d <- PI_ALL %>%
   
 print(d)
 
+
+PI_ALL %>% 
+  ggplot(aes(x = SUM_COST_RECEIVED)) + geom_density() + xlim(0, 3000000)
 
 ```
 
