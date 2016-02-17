@@ -1,11 +1,9 @@
 ---
-title: "NIH_funds_all_PIs"
+title: "all_years"
 author: "Nick_Fox"
-date: "February 10, 2016"
+date: "February 16, 2016"
 output: html_document
 ---
-
-The goal of this rmd file is to develop code to quickly accumulate the relevant information from the NIH's RePORTER files for analyzing R01 funding data.
 
 ```{r echo = FALSE}
 #install.packages("dplyr")
@@ -157,145 +155,196 @@ setwd("~/Dropbox/GitHub_master/data/NIH_awards")
 
 ```{r echo = FALSE}
 
-a <- read.csv("RePORTER_PRJ_C_FY2013.csv", header = TRUE, stringsAsFactors = FALSE)
-#load in all NIH award data for the fiscal year of choice (in file name - FYXXXX)
+fy2014 <- read.csv("RePORTER_PRJ_C_FY2014.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2013 <- read.csv("RePORTER_PRJ_C_FY2013.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2012 <- read.csv("RePORTER_PRJ_C_FY2012.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2011 <- read.csv("RePORTER_PRJ_C_FY2011.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2010 <- read.csv("RePORTER_PRJ_C_FY2010.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2009 <- read.csv("RePORTER_PRJ_C_FY2009.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2008 <- read.csv("RePORTER_PRJ_C_FY2008.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2007 <- read.csv("RePORTER_PRJ_C_FY2007.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2006 <- read.csv("RePORTER_PRJ_C_FY2006.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2005 <- read.csv("RePORTER_PRJ_C_FY2005.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2004 <- read.csv("RePORTER_PRJ_C_FY2004.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2003 <- read.csv("RePORTER_PRJ_C_FY2003.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2002 <- read.csv("RePORTER_PRJ_C_FY2002.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2001 <- read.csv("RePORTER_PRJ_C_FY2001.csv", header = TRUE, stringsAsFactors = FALSE)
+fy2000 <- read.csv("RePORTER_PRJ_C_FY2000.csv", header = TRUE, stringsAsFactors = FALSE)
 
-z <- read.csv("RePORTER_PRJ_C_FY2000.csv", header = TRUE, stringsAsFactors = FALSE)
+#read in all of the raw data
+
+```
 
 
+```{r echo = FALSE}
 filter_target <- c("R01", "R23", "R29", "R37")
-#
 
-b <- a %>% 
-  filter(ACTIVITY %in% filter_target)
-#makes a new dataframe with just R01-equivalent award data
+fy2014 <- fy2014 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
 
-y <- z %>% 
-  filter(ACTIVITY %in% filter_target)
+fy2013 <- fy2013 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
 
-c <- b %>% 
-  select(FY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+fy2012 <- fy2012 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
 
-x <- y %>% 
-  select(FY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+fy2011 <- fy2011 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
 
-c <- c %>% 
+fy2010 <- fy2010 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+
+fy2009 <- fy2009 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+
+fy2008 <- fy2008 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+
+fy2007 <- fy2007 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+
+fy2006 <- fy2006 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+
+fy2005 <- fy2005 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+
+fy2004 <- fy2004 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+
+fy2003 <- fy2003 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+
+fy2002 <- fy2002 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+
+fy2001 <- fy2001 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+
+fy2000 <- fy2000 %>% 
+  filter(ACTIVITY %in% filter_target) %>% 
+  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+
+#select only R01 equivalent awards and the relevent columns
+```
+
+``` {r echo = FALSE}
+
+R01_equiv <- bind_rows(fy2014, fy2013, fy2012, fy2011, fy2010, fy2009, fy2008, fy2007, fy2006, fy2005, fy2004, fy2003, fy2002, fy2001, fy2000)
+
+#bind all years into one data frame
+
+```
+
+```{r echo = FALSE}
+
+R01_equiv <- R01_equiv %>% 
   separate(col = PI_IDS, into = c("PI_1", "PI_2", "PI_3", "PI_4", "PI_5", "PI_6", "PI_7", "PI_8", "PI_9", "PI_10", "PI_11"), sep = "\\;")
 
-c[c == ""] <- NA
+R01_equiv[R01_equiv == ""] <- NA
 
-c <- as.data.frame(sapply(c, gsub, pattern = "(.contact.)", replacement = ""), stringsAsFactors = FALSE)
+R01_equiv <- as.data.frame(sapply(R01_equiv, gsub, pattern = "(.contact.)", replacement = ""), stringsAsFactors = FALSE)
 
-c$TOTAL_COST <- as.numeric(as.character(c$TOTAL_COST))
+R01_equiv$TOTAL_COST <- as.numeric(as.character(R01_equiv$TOTAL_COST))
 
-c <- c %>% 
+R01_equiv <- R01_equiv %>% 
   mutate(PI_1_DUMMY = ifelse(!is.na(PI_1), 1, 0), PI_2_DUMMY = ifelse(!is.na(PI_2), 1, 0), PI_3_DUMMY = ifelse(!is.na(PI_3), 1, 0), PI_4_DUMMY = ifelse(!is.na(PI_4), 1, 0), PI_5_DUMMY = ifelse(!is.na(PI_5), 1, 0), PI_6_DUMMY = ifelse(!is.na(PI_6), 1, 0), PI_7_DUMMY = ifelse(!is.na(PI_7), 1, 0), PI_8_DUMMY = ifelse(!is.na(PI_8), 1, 0), PI_9_DUMMY = ifelse(!is.na(PI_9), 1, 0), PI_10_DUMMY = ifelse(!is.na(PI_10), 1, 0), PI_11_DUMMY = ifelse(!is.na(PI_11), 1, 0), TOTAL_PIS = PI_1_DUMMY + PI_2_DUMMY + PI_3_DUMMY + PI_4_DUMMY + PI_5_DUMMY + PI_6_DUMMY + PI_7_DUMMY + PI_8_DUMMY + PI_9_DUMMY + PI_10_DUMMY + PI_11_DUMMY)
 
-c <- c %>%
+R01_equiv <- R01_equiv %>%
+  group_by(FY) %>% 
   filter(!is.na(TOTAL_COST)) %>% 
   mutate(TOTAL_DOLLARS = sum(TOTAL_COST), AVERAGE_PER_PI = TOTAL_DOLLARS / sum(TOTAL_PIS))
 
-c <- c %>% 
-  group_by(APPLICATION_ID) %>% 
+R01_equiv <- R01_equiv %>% 
+  group_by(FY, APPLICATION_ID) %>% 
   mutate(COST_PER_PI = TOTAL_COST / TOTAL_PIS)
 
-######
-
-x <- x %>% 
-  separate(col = PI_IDS, into = c("PI_1", "PI_2", "PI_3", "PI_4", "PI_5", "PI_6", "PI_7", "PI_8", "PI_9", "PI_10", "PI_11"), sep = "\\;")
-
-x[x == ""] <- NA
-
-x <- as.data.frame(sapply(x, gsub, pattern = "(.contact.)", replacement = ""), stringsAsFactors = FALSE)
-
-x$TOTAL_COST <- as.numeric(as.character(x$TOTAL_COST))
-
-x <- x %>% 
-  mutate(PI_1_DUMMY = ifelse(!is.na(PI_1), 1, 0), PI_2_DUMMY = ifelse(!is.na(PI_2), 1, 0), PI_3_DUMMY = ifelse(!is.na(PI_3), 1, 0), PI_4_DUMMY = ifelse(!is.na(PI_4), 1, 0), PI_5_DUMMY = ifelse(!is.na(PI_5), 1, 0), PI_6_DUMMY = ifelse(!is.na(PI_6), 1, 0), PI_7_DUMMY = ifelse(!is.na(PI_7), 1, 0), PI_8_DUMMY = ifelse(!is.na(PI_8), 1, 0), PI_9_DUMMY = ifelse(!is.na(PI_9), 1, 0), PI_10_DUMMY = ifelse(!is.na(PI_10), 1, 0), PI_11_DUMMY = ifelse(!is.na(PI_11), 1, 0), TOTAL_PIS = PI_1_DUMMY + PI_2_DUMMY + PI_3_DUMMY + PI_4_DUMMY + PI_5_DUMMY + PI_6_DUMMY + PI_7_DUMMY + PI_8_DUMMY + PI_9_DUMMY + PI_10_DUMMY + PI_11_DUMMY)
-
-x <- x %>%
-  filter(!is.na(TOTAL_COST)) %>% 
-  mutate(TOTAL_DOLLARS = sum(TOTAL_COST), AVERAGE_PER_PI = TOTAL_DOLLARS / sum(TOTAL_PIS))
-
-x <- x %>% 
-  group_by(APPLICATION_ID) %>% 
-  mutate(COST_PER_PI = TOTAL_COST / TOTAL_PIS)
-
-c <- bind_rows(c, x)
-
-c <- c %>% 
+R01_equiv <- R01_equiv %>% 
   group_by(FY) %>% 
   mutate(PERCENT_COST_PER_PI = (COST_PER_PI / TOTAL_DOLLARS) * 100)
 
+#seperating out PI column and calculating cost per PI per FY, average per PI per FY
 
 ```
 
-
 ```{r echo = FALSE}
-PI_1 <- c %>%
-  mutate(PI = PI_1) %>%
-  group_by(PI) %>% 
-  select(FY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
 
-PI_2 <- c %>%
+PI_1 <- R01_equiv %>%
+  mutate(PI = PI_1) %>%
+  group_by(FY, PI) %>% 
+  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+
+PI_2 <- R01_equiv %>%
   filter(!is.na(PI_2)) %>% 
   mutate(PI = PI_2) %>%
-  group_by(PI) %>% 
-  select(FY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  group_by(FY, PI) %>% 
+  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
 
-PI_3 <- c %>% 
+PI_3 <- R01_equiv %>% 
   filter(!is.na(PI_3)) %>%
   mutate(PI = PI_3) %>%
-  group_by(PI) %>% 
-  select(FY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  group_by(FY, PI) %>% 
+  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
 
-PI_4 <- c %>% 
+PI_4 <- R01_equiv %>% 
   filter(!is.na(PI_4)) %>%
   mutate(PI = PI_4) %>%
-  group_by(PI) %>% 
-  select(FY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  group_by(FY, PI) %>% 
+  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
 
-PI_5 <- c %>% 
+PI_5 <- R01_equiv %>% 
   filter(!is.na(PI_5)) %>%
   mutate(PI = PI_5) %>%
-  group_by(PI) %>% 
-  select(FY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  group_by(FY, PI) %>% 
+  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
 
-PI_6 <- c %>% 
+PI_6 <- R01_equiv %>% 
   filter(!is.na(PI_6)) %>%
   mutate(PI = PI_6) %>% 
-  group_by(PI) %>% 
-  select(FY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  group_by(FY, PI) %>% 
+  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
 
-PI_7 <- c %>% 
+PI_7 <- R01_equiv %>% 
   filter(!is.na(PI_7)) %>%
   mutate(PI = PI_7) %>%
-  group_by(PI) %>% 
-  select(FY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  group_by(FY, PI) %>% 
+  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
 
-PI_8 <- c %>% 
+PI_8 <- R01_equiv %>% 
   filter(!is.na(PI_8)) %>%
   mutate(PI = PI_8) %>%
-  group_by(PI) %>% 
-  select(FY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  group_by(FY, PI) %>% 
+  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
 
-PI_9 <- c %>% 
+PI_9 <- R01_equiv %>% 
   filter(!is.na(PI_9)) %>%
   mutate(PI = PI_9) %>% 
-  group_by(PI) %>% 
-  select(FY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  group_by(FY, PI) %>% 
+  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
 
-PI_10 <- c %>% 
+PI_10 <- R01_equiv %>% 
   filter(!is.na(PI_10)) %>%
   mutate(PI = PI_10) %>%
-  group_by(PI) %>% 
-  select(FY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
-
-```
-
-```{r echo = FALSE}
+  group_by(FY, PI) %>% 
+  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
 
 PI_ALL <- bind_rows(PI_1, PI_2, PI_3, PI_4, PI_5, PI_6, PI_7, PI_8, PI_9, PI_10)
+
+#get all authors, regardless of position in grant, into one column for further analysis
 ```
 
 ```{r echo = FALSE}
@@ -305,50 +354,30 @@ PI_ALL <- PI_ALL %>%
   mutate(SUM_COST_RECEIVED = sum(COST_PER_PI), NUMBER_OF_GRANTS = n(), SUM_PERCENT_RECEIVED = sum(PERCENT_COST_PER_PI)) %>% 
   distinct(PI)
 
+#data frame with each author only appearing once per fiscal year.
 ```
-
 
 ```{r echo = FALSE}
 
-PI_ALL %>% 
-  ggplot(aes(x = NUMBER_OF_GRANTS, y = SUM_PERCENT_RECEIVED)) + geom_point() + geom_smooth(method = "lm")
+quantiles <- PI_ALL %>% 
+  group_by(FY) %>% 
+  mutate(quantile = ntile(SUM_PERCENT_RECEIVED, 5))
 
-table(PI_ALL$NUMBER_OF_GRANTS)
+quantiles_average <- quantiles %>% 
+  group_by(FY, quantile) %>% 
+  mutate(average_sum_percent = mean(SUM_PERCENT_RECEIVED), ) %>% 
+  distinct(FY)
 
-nrow(PI_ALL)
-
-table(c$TOTAL_DOLLARS)
-
-d <- PI_ALL %>% 
-  group_by(FY, NUMBER_OF_GRANTS) %>% 
-  mutate(COST_NUMBER_OF_R01s = sum(SUM_COST_RECEIVED)) %>% 
-  distinct(NUMBER_OF_GRANTS) %>% 
-  select(NUMBER_OF_GRANTS, COST_NUMBER_OF_R01s) %>% 
-  arrange(NUMBER_OF_GRANTS)
-  
-print(d)
+quantiles_average %>% 
+  ggplot(aes(x = FY, y = average_sum_percent, group = quantile)) + geom_point(aes(colour = factor(quantile)), size = 3) + geom_line(aes(colour = factor(quantile)), size = 2)
 
 
-PI_ALL %>% 
-  ggplot(aes(x = SUM_PERCENT_RECEIVED, fill = FY)) + geom_density(alpha = 0.3) + xlim(0, 0.04)
+quantiles %>% 
+  ggplot(aes(x = FY, y = NUMBER_OF_GRANTS, group = quantile)) + geom_jitter(aes(colour = factor(quantile)), size = 0.25, alpha = 0.5)
 
-PI_ALL %>% 
-  filter(NUMBER_OF_GRANTS == 1) %>% 
-  ggplot(aes(x = SUM_PERCENT_RECEIVED, fill = FY)) + geom_density(alpha = 0.3) + xlim(0, 0.02)
 
 
 ```
 
-
-```{r}
-
-test_quantile <- PI_ALL %>% 
-  group_by(FY) %>% 
-  mutate(quantile = ntile(SUM_PERCENT_RECEIVED, 5))
-
-test_quantile$quantile <- as.numeric(as.character(test_quantile$quantile))
-
-test_quantile %>% 
-  ggplot(aes(x = quantile, y = COST_PER_PI, colour = FY)) + geom_jitter(alpha = 0.05, width = 0.1, size = 3) + geom_smooth(method = "lm", size = 1.5) + scale_colour_brewer(palette = "Set1") + ylim(0, 0.06)
 
 
