@@ -11,6 +11,7 @@ output: html_document
 #install.packages("tidyr")
 #install.packages("data.table")
 #install.packages("stringr")
+#install.packages("ineq")
 
 
 
@@ -19,6 +20,7 @@ library(tidyr)
 library(ggplot2)
 library(data.table)
 library(stringr)
+library(ineq)
 #loads in all packages used in this analysis.  Find install code above.
 
 
@@ -361,28 +363,41 @@ PI_ALL <- PI_ALL %>%
 
 quantiles <- PI_ALL %>% 
   group_by(FY) %>% 
-  mutate(quantile = ntile(SUM_PERCENT_RECEIVED, 5))
+  mutate(quantile = ntile(SUM_COST_RECEIVED, 5), grant_dummy = ifelse(NUMBER_OF_GRANTS == 1, 1, 2))
 
 quantiles_average <- quantiles %>% 
   group_by(FY, quantile) %>% 
   mutate(average_sum_percent = mean(SUM_PERCENT_RECEIVED)) %>% 
   distinct(FY)
+
+
+quantiles <- quantiles %>% 
+  group_by(FY) %>% 
+  mutate(FY_Gini = Gini(SUM_COST_RECEIVED))
+
+quantiles_Gini <- quantiles %>% 
+  distinct(FY)
+
+quantiles_Gini %>% 
+  ggplot(aes(x = FY, y = FY_Gini, group = 1)) + geom_point(size = 3) + geom_line(size = 2)
 ```
 
 ```{r echo = FALSE}
-quantiles_average %>% 
+quantiles_average %>%
   ggplot(aes(x = FY, y = average_sum_percent, group = quantile)) + geom_point(aes(colour = factor(quantile)), size = 3) + geom_line(aes(colour = factor(quantile)), size = 2)
 
 
 quantiles %>% 
-  ggplot(aes(x = FY, y = SUM_PERCENT_RECEIVED, group = quantile)) + geom_point(aes(colour = factor(quantile)), size = 0.25, alpha = 0.0) + geom_smooth(aes(colour = factor(quantile)), size = 2) + coord_cartesian(ylim = c(0, 0.012))
+  ggplot(aes(x = FY, y = SUM_PERCENT_RECEIVED, group = quantile)) + geom_jitter(size = 0.1, alpha = 0.2) + geom_smooth(aes(colour = factor(quantile)), size = 1.5) + coord_cartesian(ylim = c(0, 0.012))
 
+quantiles %>%
+  ggplot(aes(x = FY, y = SUM_PERCENT_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.2) + geom_smooth(aes(colour = factor(grant_dummy)), size = 1.5) + coord_cartesian(ylim = c(0, 0.010))
 
 quantiles %>% 
   ggplot(aes(x = FY, y = NUMBER_OF_GRANTS, group = quantile)) + geom_jitter(aes(colour = factor(quantile)), size = 0.25, alpha = 0.5)
 
-
-
+quantiles %>% 
+  ggplot(aes(x = FY, y = SUM_COST_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.2) + geom_smooth(aes(colour = factor(grant_dummy)), size = 2) + coord_cartesian(ylim = c(0, 1000000))
 
 #some figures using the quantiles data
 
