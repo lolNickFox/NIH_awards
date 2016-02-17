@@ -365,17 +365,26 @@ quantiles <- PI_ALL %>%
 
 quantiles_average <- quantiles %>% 
   group_by(FY, quantile) %>% 
-  mutate(average_sum_percent = mean(SUM_PERCENT_RECEIVED), ) %>% 
+  mutate(average_sum_percent = mean(SUM_PERCENT_RECEIVED)) %>% 
   distinct(FY)
+```
 
+```{r echo = FALSE}
 quantiles_average %>% 
   ggplot(aes(x = FY, y = average_sum_percent, group = quantile)) + geom_point(aes(colour = factor(quantile)), size = 3) + geom_line(aes(colour = factor(quantile)), size = 2)
+
+
+quantiles %>% 
+  ggplot(aes(x = FY, y = SUM_PERCENT_RECEIVED, group = quantile)) + geom_point(aes(colour = factor(quantile)), size = 0.25, alpha = 0.0) + geom_smooth(aes(colour = factor(quantile)), size = 2) + coord_cartesian(ylim = c(0, 0.012))
 
 
 quantiles %>% 
   ggplot(aes(x = FY, y = NUMBER_OF_GRANTS, group = quantile)) + geom_jitter(aes(colour = factor(quantile)), size = 0.25, alpha = 0.5)
 
 
+
+
+#some figures using the quantiles data
 
 ```
 
