@@ -379,7 +379,7 @@ quantiles_Gini <- quantiles %>%
   distinct(FY)
 
 quantiles_Gini %>% 
-  ggplot(aes(x = FY, y = FY_Gini, group = 1)) + geom_point(size = 3) + geom_line(size = 2)
+  ggplot(aes(x = FY, y = FY_Gini, group = 1)) + geom_point(size = 3) + geom_line(size = 2) + coord_cartesian(ylim = c(0.3, 0.36))
 ```
 
 ```{r echo = FALSE}
