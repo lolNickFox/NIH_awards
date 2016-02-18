@@ -18,18 +18,18 @@ output: html_document
 #install.packages("lubridate")
 #install.packages("data.table")
 
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(data.table)
-library(stringr)
-library(ineq)
-library(RColorBrewer)
-library(scales)
-library(grid)
-library(quantmod)
-library(lubridate)
-library(data.table)
+suppressMessages(library(dplyr))
+suppressMessages(library(tidyr))
+suppressMessages(library(ggplot2))
+suppressMessages(library(data.table))
+suppressMessages(library(stringr))
+suppressMessages(library(ineq))
+suppressMessages(library(RColorBrewer))
+suppressMessages(library(scales))
+suppressMessages(library(grid))
+suppressMessages(library(quantmod))
+suppressMessages(library(lubridate))
+suppressMessages(library(data.table))
 #loads in all packages used in this analysis.  Find install code above.
 
 ```
@@ -170,6 +170,7 @@ read.url <- function(url, ...){
   return(url.data)
 }
 
+#function to read url files (had used previously to collect online csv files)
 ```
 
 
@@ -214,6 +215,7 @@ fte_theme <- function() {
       theme(plot.margin = unit(c(0.35, 0.2, 0.3, 0.35), "cm"))
     }
 
+#ggplot theme for figures to look a little more like 538 blog figures
 ```
 
 ```{r echo = FALSE}
@@ -445,6 +447,7 @@ quantiles <- quantiles %>%
 quantiles_Gini <- quantiles %>% 
   distinct(FY)
 
+#makes a few new data frames that include quintiles (population per year split into 5 based on SUM_COST_RECEIVED, which is the total dollars received per PI)
 ```
 
 ```{r echo = FALSE}
@@ -477,28 +480,60 @@ quantiles_test <- dplyr::left_join(quantiles_test, yearly_cpi, by = "FY")
 
 quantiles_test$adj_factor <- 2-quantiles_test$adj_factor
 
-quantiles_test <- quantiles_test %>% 
+quantiles_adjusted <- quantiles_test %>% 
   mutate(adjusted_average_cost = average_cost_one_grant * adj_factor)
 
-#creates the adjustment factor for the quantiles_test data frame using the Consumer Price Index (CPI)
+#creates the adjustment factor for the quantiles_test data frame using the Consumer Price Index (CPI) - also created the final dataframe with a more useful name (adjusted)
 ```
 
 ```{R echo = FALSE}
 
-R01_equiv_test <- R01_equiv %>% 
+R01_equiv_adjusted <- R01_equiv %>% 
   distinct(FY)
  
-R01_equiv_test$FY <- as.numeric(R01_equiv_test$FY)
+R01_equiv_adjusted$FY <- as.numeric(R01_equiv_adjusted$FY)
 
-R01_equiv_test <- dplyr::left_join(R01_equiv_test, yearly_cpi, by = "FY")
+R01_equiv_adjusted <- dplyr::left_join(R01_equiv_adjusted, yearly_cpi, by = "FY")
 
-R01_equiv_test$adj_factor <- 2-R01_equiv_test$adj_factor
+R01_equiv_adjusted$adj_factor <- 2-R01_equiv_adjusted$adj_factor
 
-R01_equiv_test <- R01_equiv_test %>% 
+R01_equiv_adjusted <- R01_equiv_adjusted %>% 
   mutate(adjusted_total_dollars = TOTAL_DOLLARS * adj_factor) %>% 
   select(FY, TOTAL_DOLLARS, adjusted_total_dollars)
 
+#creates the adjustment factor for the R01_equiv data frame using the Consumer Price Index (CPI) - this is for total dollars dispersed by the NIH per year, and the adjusted, in constant year 2000 dollars.
 ```
+
+
+
+# Introduction
+
+
+# Methods
+
+
+# Results
+
+
+# Discussion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ```{r echo = FALSE}
@@ -507,23 +542,25 @@ quantiles_Gini %>%
   ggplot(aes(x = FY, y = FY_Gini, group = 1)) + geom_line(size = 2, colour = "#c0392b") + coord_cartesian(ylim = c(0.3, 0.36)) + fte_theme() + labs(title="Gini coefficient within R01-equivelent awards\n2000 - 2014", x="\nFiscal Year", y="Gini coefficient\n") + geom_hline(yintercept=0.3, size=0.4, color="black")
 ```
 
+
 ```{r echo = FALSE}
 
-quantiles_test$FY <- as.factor(quantiles_test$FY)
+R01_equiv_adjusted$FY <- as.factor(R01_equiv_adjusted$FY)
 
-quantiles_test %>% 
+R01_equiv_adjusted %>% 
+  ggplot(aes(x = FY, y = TOTAL_DOLLARS, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_total_dollars), size = 2, colour = "blue") + fte_theme() + labs(title="Amount dispersed by NIH per year for\nR01-equivalent awards", x="\nFiscal Year", y="Dollars\n") + geom_hline(yintercept=6000000000, size=0.4, color="black") + geom_line(colour = "red") + geom_line(aes(y = adjusted_total_dollars), colour = "blue")
+
+```
+
+
+```{r echo = FALSE}
+
+quantiles_adjusted$FY <- as.factor(quantiles_adjusted$FY)
+
+quantiles_adjusted %>% 
   ggplot(aes(x = FY, y = average_cost_one_grant, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost), size = 2, colour = "blue") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=200000, size=0.4, color="black") + coord_cartesian(ylim = c(200000, 400000))
 
 #average amount of grant dollars going to investigators who are only receiving one grant
-```
-
-```{r echo = FALSE}
-
-R01_equiv_test$FY <- as.factor(R01_equiv_test$FY)
-
-R01_equiv_test %>% 
-  ggplot(aes(x = FY, y = TOTAL_DOLLARS, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_total_dollars), size = 2, colour = "blue") + fte_theme() + labs(title="Amount dispersed by NIH per year for\nR01-equivalent awards", x="\nFiscal Year", y="Dollars\n") + geom_hline(yintercept=6000000000, size=0.4, color="black") + geom_line(colour = "red") + geom_line(aes(y = adjusted_total_dollars), colour = "blue")
-
 ```
 
 
