@@ -12,8 +12,11 @@ output: html_document
 #install.packages("data.table")
 #install.packages("stringr")
 #install.packages("ineq")
-
-
+#install.packages("RColorBrewer")
+#install.packages("scales")
+#install.packages("quantmod")
+#install.packages("lubridate")
+#install.packages("data.table")
 
 library(dplyr)
 library(tidyr)
@@ -21,9 +24,17 @@ library(ggplot2)
 library(data.table)
 library(stringr)
 library(ineq)
+library(RColorBrewer)
+library(scales)
+library(grid)
+library(quantmod)
+library(lubridate)
+library(data.table)
 #loads in all packages used in this analysis.  Find install code above.
 
+```
 
+```{r echo = FALSE}
 Sem <- function(x) {
   sqrt(var(x)/length(x))
   }
@@ -149,7 +160,63 @@ asNumeric <- function(x) as.numeric(as.character(x))
 factorsNumeric <- function(d) modifyList(d, lapply(d[, sapply(d, is.factor)],   
                                                    asNumeric))
 #functions that allow easy conversions of factors to numeric
+```
 
+```{r echo = FALSE}
+read.url <- function(url, ...){
+  tmpFile <- tempfile()
+  download.file(url, destfile = tmpFile, method = "curl")
+  url.data <- fread(tmpFile, ...)
+  return(url.data)
+}
+
+```
+
+
+```{r echo = FALSE}
+
+fte_theme <- function() {
+      
+      # Generate the colors for the chart procedurally with RColorBrewer
+      palette <- brewer.pal("Greys", n=9)
+      color.background = palette[2]
+      color.grid.major = palette[3]
+      color.axis.text = palette[6]
+      color.axis.title = palette[7]
+      color.title = palette[9]
+      
+      # Begin construction of chart
+      theme_bw(base_size=9) +
+        
+      # Set the entire chart region to a light gray color
+      theme(panel.background=element_rect(fill=color.background, color=color.background)) +
+      theme(plot.background=element_rect(fill=color.background, color=color.background)) +
+      theme(panel.border=element_rect(color=color.background)) +
+      
+      # Format the grid
+      theme(panel.grid.major=element_line(color=color.grid.major,size=.25)) +
+      theme(panel.grid.minor=element_blank()) +
+      theme(axis.ticks=element_blank()) +
+      
+      # Format the legend, but hide by default
+      #theme(legend.position="none") +
+      theme(legend.background = element_rect(fill=color.background)) +
+      theme(legend.text = element_text(size=10,color=color.axis.title)) +
+      
+      # Set title and axis labels, and format these and tick marks
+      theme(plot.title=element_text(color=color.title, size=16, vjust=1.25)) +
+      theme(axis.text.x=element_text(size=10,color=color.axis.text)) +
+      theme(axis.text.y=element_text(size=10,color=color.axis.text)) +
+      theme(axis.title.x=element_text(size=12,color=color.axis.title, vjust=0.5)) +
+      theme(axis.title.y=element_text(size=12,color=color.axis.title, vjust=0.5)) +
+      
+      # Plot margins
+      theme(plot.margin = unit(c(0.35, 0.2, 0.3, 0.35), "cm"))
+    }
+
+```
+
+```{r echo = FALSE}
 #FOR MAC, use the WD below:
 setwd("~/Dropbox/GitHub_master/data/NIH_awards")
 
@@ -378,30 +445,126 @@ quantiles <- quantiles %>%
 quantiles_Gini <- quantiles %>% 
   distinct(FY)
 
-quantiles_Gini %>% 
-  ggplot(aes(x = FY, y = FY_Gini, group = 1)) + geom_point(size = 3) + geom_line(size = 2) + coord_cartesian(ylim = c(0.3, 0.36))
 ```
 
 ```{r echo = FALSE}
-quantiles_average %>%
-  ggplot(aes(x = FY, y = average_sum_percent, group = quantile)) + geom_point(aes(colour = factor(quantile)), size = 3) + geom_line(aes(colour = factor(quantile)), size = 2)
 
+quantiles_test <- quantiles %>% 
+  filter(NUMBER_OF_GRANTS == 1) %>% 
+  group_by(FY) %>% 
+  mutate(average_cost_one_grant = mean(SUM_COST_RECEIVED)) %>% 
+  distinct(FY)
+```
+
+```{r echo = FALSE}
+
+monthly_cpi <-read.csv("CPIAUCSL.csv", header = TRUE, stringsAsFactors = FALSE)
+
+monthly_cpi$FY <- year(monthly_cpi$DATE)
+
+yearly_cpi <- monthly_cpi %>% 
+  group_by(FY) %>% 
+  summarize(cpi = mean(VALUE))
+
+yearly_cpi$adj_factor <- yearly_cpi$cpi/yearly_cpi$cpi[yearly_cpi$FY == 2000]
+
+yearly_cpi$FY <- as.numeric(yearly_cpi$FY)
+
+quantiles_test$FY <- as.numeric(quantiles_test$FY)
+
+
+quantiles_test <- dplyr::left_join(quantiles_test, yearly_cpi, by = "FY")
+
+quantiles_test$adj_factor <- 2-quantiles_test$adj_factor
+
+quantiles_test <- quantiles_test %>% 
+  mutate(adjusted_average_cost = average_cost_one_grant * adj_factor)
+
+#creates the adjustment factor for the quantiles_test data frame using the Consumer Price Index (CPI)
+```
+
+```{R echo = FALSE}
+
+R01_equiv_test <- R01_equiv %>% 
+  distinct(FY)
+ 
+R01_equiv_test$FY <- as.numeric(R01_equiv_test$FY)
+
+R01_equiv_test <- dplyr::left_join(R01_equiv_test, yearly_cpi, by = "FY")
+
+R01_equiv_test$adj_factor <- 2-R01_equiv_test$adj_factor
+
+R01_equiv_test <- R01_equiv_test %>% 
+  mutate(adjusted_total_dollars = TOTAL_DOLLARS * adj_factor) %>% 
+  select(FY, TOTAL_DOLLARS, adjusted_total_dollars)
+
+```
+
+
+```{r echo = FALSE}
+
+quantiles_Gini %>% 
+  ggplot(aes(x = FY, y = FY_Gini, group = 1)) + geom_line(size = 2, colour = "#c0392b") + coord_cartesian(ylim = c(0.3, 0.36)) + fte_theme() + labs(title="Gini coefficient within R01-equivelent awards\n2000 - 2014", x="\nFiscal Year", y="Gini coefficient\n") + geom_hline(yintercept=0.3, size=0.4, color="black")
+```
+
+```{r echo = FALSE}
+
+quantiles_test$FY <- as.factor(quantiles_test$FY)
+
+quantiles_test %>% 
+  ggplot(aes(x = FY, y = average_cost_one_grant, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost), size = 2, colour = "blue") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=200000, size=0.4, color="black") + coord_cartesian(ylim = c(200000, 400000))
+
+#average amount of grant dollars going to investigators who are only receiving one grant
+```
+
+```{r echo = FALSE}
+
+R01_equiv_test$FY <- as.factor(R01_equiv_test$FY)
+
+R01_equiv_test %>% 
+  ggplot(aes(x = FY, y = TOTAL_DOLLARS, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_total_dollars), size = 2, colour = "blue") + fte_theme() + labs(title="Amount dispersed by NIH per year for\nR01-equivalent awards", x="\nFiscal Year", y="Dollars\n") + geom_hline(yintercept=6000000000, size=0.4, color="black") + geom_line(colour = "red") + geom_line(aes(y = adjusted_total_dollars), colour = "blue")
+
+```
+
+
+```{r echo = FALSE}
+
+quantiles_average %>%
+  ggplot(aes(x = FY, y = average_sum_percent, group = quantile)) + geom_line(aes(colour = factor(quantile)), size = 2) + fte_theme() + labs(title="Percent of total awarded dollars per investigator\ngrouped by quantile", x="\nFiscal Year", y="Percent of awarded dollars\n") + geom_hline(yintercept=0.001, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
+
+```
+
+```{r echo = FALSE}
 
 quantiles %>% 
-  ggplot(aes(x = FY, y = SUM_PERCENT_RECEIVED, group = quantile)) + geom_jitter(size = 0.1, alpha = 0.2) + geom_smooth(aes(colour = factor(quantile)), size = 1.5) + coord_cartesian(ylim = c(0, 0.012))
+  ggplot(aes(x = FY, y = SUM_PERCENT_RECEIVED, group = quantile)) + geom_jitter(size = 0.1, alpha = 0.1) + geom_smooth(aes(colour = factor(quantile)), size = 1.5) + coord_cartesian(ylim = c(0, 0.015)) + fte_theme() + labs(title="Percent of total awarded dollars per investigator\ngrouped by quantile", x="\nFiscal Year", y="Percent of awarded dollars\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
+
+```
+
+```{r echo = FALSE}
 
 quantiles %>%
-  ggplot(aes(x = FY, y = SUM_PERCENT_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.2) + geom_smooth(aes(colour = factor(grant_dummy)), size = 1.5) + coord_cartesian(ylim = c(0, 0.010))
+  ggplot(aes(x = FY, y = SUM_PERCENT_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.1) + geom_smooth(aes(colour = factor(grant_dummy)), size = 1.5) + coord_cartesian(ylim = c(0, 0.015)) + fte_theme() + labs(title="Percent of total awarded dollars per investigator\n grouped by investigators with 1 or more than 1 grant", x="\nFiscal Year", y="Percent of awarded dollars\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
+
+```
+
+```{r echo = FALSE}
+
+
+filter_target_quantile <- c("1", "2")
 
 quantiles %>% 
-  ggplot(aes(x = FY, y = NUMBER_OF_GRANTS, group = quantile)) + geom_jitter(aes(colour = factor(quantile)), size = 0.25, alpha = 0.5)
+  ggplot(aes(x = FY, y = NUMBER_OF_GRANTS, group = quantile)) + geom_jitter(aes(colour = factor(quantile)), size = 1, alpha = 0.3) + fte_theme() + labs(title="Total number of grants awarded per investigator", x="\nFiscal Year", y="Number of grants\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
+
+#
+```
+
+```{r echo = FALSE}
 
 quantiles %>% 
-  ggplot(aes(x = FY, y = SUM_COST_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.2) + geom_smooth(aes(colour = factor(grant_dummy)), size = 2) + coord_cartesian(ylim = c(0, 1000000))
+  ggplot(aes(x = FY, y = SUM_COST_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.2) + geom_smooth(aes(colour = factor(grant_dummy)), size = 2) + coord_cartesian(ylim = c(0, 1000000)) + fte_theme() + labs(title="Total dollars awarded per investigator", x="\nFiscal Year", y="Dollars awarded\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
 
 #some figures using the quantiles data
 
 ```
-
-
 
