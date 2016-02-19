@@ -215,7 +215,7 @@ fte_theme <- function() {
       theme(plot.margin = unit(c(0.35, 0.2, 0.3, 0.35), "cm"))
     }
 
-#ggplot theme for figures to look a little more like 538 blog figures
+#ggplot themes for figures to look a little more like 538 blog figures
 ```
 
 ```{r echo = FALSE}
@@ -504,43 +504,93 @@ R01_equiv_adjusted <- R01_equiv_adjusted %>%
 #creates the adjustment factor for the R01_equiv data frame using the Consumer Price Index (CPI) - this is for total dollars dispersed by the NIH per year, and the adjusted, in constant year 2000 dollars.
 ```
 
+# Federal Laboratory Funding in the 21st Century - A 15 Year Review
+Authors: Nicholas Fox (Rutgers University) & Mariana Martins (Columbia University)
+ <br>
+ <br>
+## Introduction
+
+* Over the last century, research funding from the National Institutes of Health (NIH) have supported hundreds of thousands of independant scientists at more than 2,000 universities accross the country (CITATION - NIH website).  Nearly all of the NIH's funding is provided annually in the Departments of Labor, Health and Human Services, Education, and Related Agencies appropriations act.  This act is preceeded by the annual budget presented by the President and any Congressional budget resolutions.  Typically, the federal budget needs to be passed by October 1st.  If this does not happen, the government can pass short-term "continuing resolutions" (CR) to continue funding to government agencies.
+
+* Since the year 2000, the federal budget has experienced surplus, deficit, and a historic recession.  Political battles in Congress have also caused budget deadlines to be missed, resulting in strings of CRs keeping federal agencies running.  Additionally, the budget sequestration of 2013 further hamstrung the budget of federal agencies due to the lack of the passing of a proper federal budget.
+
+* The most common (and historically the oldest) source of public funding for independent investigators is the R01 (or R01 equivelent) award.  These awards allows an investigator to define the scientific objective of a project and provide funds for the specified project.  Projects are awarded to by the NIH to support specific areas of health-related research within a scope defined by the NIH and informed by the President and their scientific advisors.
+
+* So far, it is unknown how these events have affected the NIH's ability to fund independent research laboratories.  This paper describes how R01 equivelent funding has changed over time since the beginning of the 21st century.
+
+## Methods
+### Data Collection
+NIH budget files for fiscal years 2000 through 2014 were collected from the NIH RePORTER website's export tool, ExPORTER (website citation).  Fiscal year, NIH Application ID, Primary Investigator ID Number and Total Cost data was collected for each fiscal year.  Primary Investigator ID numbers were used to keep all data anonomyous.  Data for all R01-equivelent awards were collected, which include the activities R01, R23, R29, and R37, although not all awards may have been used in a given year.  The breakdown of which awards were used in each year can be seen in table 1 (MAKE TABLE 1).  Total cost information was associated with each investigator for each fiscal year.
+
+Starting in 2007, R01-equivelent awards could have more than one primary investigator.  To account for this, the total cost dispersed per application was divided by the number of primary investigators and this number was associated with each individual investigator.  This operates on the assumption that award funds are being dispersed evenly to each investigator, but we realize in practice this may not be the case.
+
+Per year, the number of grants per investigator was calculated.  This was a count of how many unique Application IDs were associated with each investigator ID.  The sum cost was calculated as the sum of the total cost associated with that investigator for each fiscal year.
+
+Year 2000 adjusted dollars were calculated using the Consumer Price Index from the Bureau of Labor Statistics (CITATION - BLS link).  An adjustment factor was calculated and applied to the total cost amounts for each year after year 2000.
 
 
-# Introduction
-
-
-# Methods
-
-
-# Results
-
-
-# Discussion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## Results
+### Gini coefficient for inequality
+The Gini coefficient has been used in previous literature to characterize inieuality in income distributions (CITATION).  The coefficient ranges from 0, where income is perfectly distributed among all group members, to 1, where income is perfectly concentrated with one group member.  A larger coefficient signifies a greater income disparity.  We used the Gini coefficient to describe R01-equivelent award disparity for each fiscal year, and it can be seen in Figure 1.
 
 ```{r echo = FALSE}
 
 quantiles_Gini %>% 
-  ggplot(aes(x = FY, y = FY_Gini, group = 1)) + geom_line(size = 2, colour = "#c0392b") + coord_cartesian(ylim = c(0.3, 0.36)) + fte_theme() + labs(title="Gini coefficient within R01-equivelent awards\n2000 - 2014", x="\nFiscal Year", y="Gini coefficient\n") + geom_hline(yintercept=0.3, size=0.4, color="black")
+  ggplot(aes(x = FY, y = FY_Gini, group = 1)) + geom_line(size = 2, colour = "#c0392b") + coord_cartesian(ylim = c(0.3, 0.36)) + fte_theme() + labs(title="Figure 1. Gini coefficient within R01-equivelent awards\n2000 - 2014", x="\nFiscal Year", y="Gini coefficient\n") + geom_hline(yintercept=0.3, size=0.4, color="black")
+
 ```
+
+As seen above, the Gini coefficient steadily falls from year 2000 until year 2008, then increases in year 2009.  Following this increase, the coefficient again falls, though by year 2014 it is still higher than it's lowest point.
+
+### Total NIH funds dispersed through R01-equivelent awards
+Figure 2 below shows the total dollars dispersed by the NIH to R01-equvelent award recepients.  The red line shows the dollars reported, and the blue line shows the dollar amount in an inflation-adjusted year 2000 constant dollars.  
+
+```{r echo = FALSE}
+
+R01_equiv_adjusted$FY <- as.factor(R01_equiv_adjusted$FY)
+
+R01_equiv_adjusted %>% 
+  ggplot(aes(x = FY, y = TOTAL_DOLLARS, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_total_dollars), size = 2, colour = "blue") + fte_theme() + labs(title="Figure 2. Amount dispersed by NIH per year\nfor R01-equivalent awards", x="\nFiscal Year", y="Dollars\n") + geom_hline(yintercept=6000000000, size=0.4, color="black") + geom_line(colour = "red") + geom_line(aes(y = adjusted_total_dollars), colour = "blue") + annotate("text",x=14,y=9500000000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=7700000000,label="Adjusted\nDollars",colour="blue", size = 6)
+
+```
+
+As seen in the figure, in adjusted dollars, NIH funds awarded through R01-equvelent awards first peaked and then plateaued from years 2005-2008, then spiked in 2009.  In year 2000 constant dollars, this peak occured in 2004, before funds decreased to 2008.  In 2009, funds dispersed through these awards spiked, and was also high in 2010.  From 2011 on, the amount of dollars dispersed through these awards fell.
+
+
+<br>
+<br>
+<br>
+<br>
+
+
+
+## Discussion
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+-------------------
+
+
+
+
+
+
+
+
+
+
 
 
 ```{r echo = FALSE}
@@ -548,7 +598,7 @@ quantiles_Gini %>%
 R01_equiv_adjusted$FY <- as.factor(R01_equiv_adjusted$FY)
 
 R01_equiv_adjusted %>% 
-  ggplot(aes(x = FY, y = TOTAL_DOLLARS, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_total_dollars), size = 2, colour = "blue") + fte_theme() + labs(title="Amount dispersed by NIH per year for\nR01-equivalent awards", x="\nFiscal Year", y="Dollars\n") + geom_hline(yintercept=6000000000, size=0.4, color="black") + geom_line(colour = "red") + geom_line(aes(y = adjusted_total_dollars), colour = "blue")
+  ggplot(aes(x = FY, y = TOTAL_DOLLARS, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_total_dollars), size = 2, colour = "blue") + fte_theme() + labs(title="Amount dispersed by NIH per year for\nR01-equivalent awards", x="\nFiscal Year", y="Dollars\n") + geom_hline(yintercept=6000000000, size=0.4, color="black") + geom_line(colour = "red") + geom_line(aes(y = adjusted_total_dollars), colour = "blue") + annotate("text",x=14,y=9500000000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=7700000000,label="Adjusted\nDollars",colour="blue", size = 6)
 
 ```
 
@@ -558,7 +608,7 @@ R01_equiv_adjusted %>%
 quantiles_adjusted$FY <- as.factor(quantiles_adjusted$FY)
 
 quantiles_adjusted %>% 
-  ggplot(aes(x = FY, y = average_cost_one_grant, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost), size = 2, colour = "blue") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=200000, size=0.4, color="black") + coord_cartesian(ylim = c(200000, 400000))
+  ggplot(aes(x = FY, y = average_cost_one_grant, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost), size = 2, colour = "blue") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=200000, size=0.4, color="black") + coord_cartesian(ylim = c(200000, 400000)) + annotate("text",x=14,y=325000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=250000,label="Adjusted\nDollars",colour="blue", size = 6)
 
 #average amount of grant dollars going to investigators who are only receiving one grant
 ```
