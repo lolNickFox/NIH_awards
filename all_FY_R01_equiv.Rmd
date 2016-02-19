@@ -457,6 +457,12 @@ quantiles_test <- quantiles %>%
   group_by(FY) %>% 
   mutate(average_cost_one_grant = mean(SUM_COST_RECEIVED)) %>% 
   distinct(FY)
+
+quantiles_test2 <- quantiles %>% 
+  filter(NUMBER_OF_GRANTS != 1) %>% 
+  group_by(FY) %>% 
+  mutate(average_cost_two_or_more_grants = mean(SUM_COST_RECEIVED)) %>% 
+  distinct(FY)
 ```
 
 ```{r echo = FALSE}
@@ -486,6 +492,22 @@ quantiles_adjusted <- quantiles_test %>%
 #creates the adjustment factor for the quantiles_test data frame using the Consumer Price Index (CPI) - also created the final dataframe with a more useful name (adjusted)
 ```
 
+```{r echo = FALSE}
+
+quantiles_test2$FY <- as.numeric(quantiles_test2$FY)
+
+
+quantiles_test2 <- dplyr::left_join(quantiles_test2, yearly_cpi, by = "FY")
+
+quantiles_test2$adj_factor <- 2-quantiles_test2$adj_factor
+
+quantiles_adjusted2 <- quantiles_test2 %>% 
+  mutate(adjusted_average_cost_two_or_more = average_cost_two_or_more_grants * adj_factor)
+
+```
+
+
+
 ```{R echo = FALSE}
 
 R01_equiv_adjusted <- R01_equiv %>% 
@@ -506,8 +528,10 @@ R01_equiv_adjusted <- R01_equiv_adjusted %>%
 
 # Federal Laboratory Funding in the 21st Century - A 15 Year Review
 Authors: Nicholas Fox (Rutgers University) & Mariana Martins (Columbia University)
+
  <br>
  <br>
+ 
 ## Introduction
 
 * Over the last century, research funding from the National Institutes of Health (NIH) have supported hundreds of thousands of independant scientists at more than 2,000 universities accross the country (CITATION - NIH website).  Nearly all of the NIH's funding is provided annually in the Departments of Labor, Health and Human Services, Education, and Related Agencies appropriations act.  This act is preceeded by the annual budget presented by the President and any Congressional budget resolutions.  Typically, the federal budget needs to be passed by October 1st.  If this does not happen, the government can pass short-term "continuing resolutions" (CR) to continue funding to government agencies.
@@ -550,7 +574,7 @@ Figure 2 below shows the total dollars dispersed by the NIH to R01-equvelent awa
 R01_equiv_adjusted$FY <- as.factor(R01_equiv_adjusted$FY)
 
 R01_equiv_adjusted %>% 
-  ggplot(aes(x = FY, y = TOTAL_DOLLARS, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_total_dollars), size = 2, colour = "blue") + fte_theme() + labs(title="Figure 2. Amount dispersed by NIH per year\nfor R01-equivalent awards", x="\nFiscal Year", y="Dollars\n") + geom_hline(yintercept=6000000000, size=0.4, color="black") + geom_line(colour = "red") + geom_line(aes(y = adjusted_total_dollars), colour = "blue") + annotate("text",x=14,y=9500000000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=7700000000,label="Adjusted\nDollars",colour="blue", size = 6)
+  ggplot(aes(x = FY, y = TOTAL_DOLLARS, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_total_dollars), size = 2, colour = "blue") + fte_theme() + labs(title="Figure 2. Amount dispersed by NIH per year\nfor R01-equivalent awards", x="\nFiscal Year", y="Dollars\n") + geom_hline(yintercept=6000000000, size=0.4, color="black") + geom_line(colour = "red") + geom_line(aes(y = adjusted_total_dollars), colour = "blue") + annotate("text",x=14,y=9500000000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=7900000000,label="Adjusted\nDollars",colour="blue", size = 6)
 
 ```
 
@@ -593,14 +617,6 @@ As seen in the figure, in adjusted dollars, NIH funds awarded through R01-equvel
 
 
 
-```{r echo = FALSE}
-
-R01_equiv_adjusted$FY <- as.factor(R01_equiv_adjusted$FY)
-
-R01_equiv_adjusted %>% 
-  ggplot(aes(x = FY, y = TOTAL_DOLLARS, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_total_dollars), size = 2, colour = "blue") + fte_theme() + labs(title="Amount dispersed by NIH per year for\nR01-equivalent awards", x="\nFiscal Year", y="Dollars\n") + geom_hline(yintercept=6000000000, size=0.4, color="black") + geom_line(colour = "red") + geom_line(aes(y = adjusted_total_dollars), colour = "blue") + annotate("text",x=14,y=9500000000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=7700000000,label="Adjusted\nDollars",colour="blue", size = 6)
-
-```
 
 
 ```{r echo = FALSE}
@@ -612,6 +628,18 @@ quantiles_adjusted %>%
 
 #average amount of grant dollars going to investigators who are only receiving one grant
 ```
+
+
+```{r echo = FALSE}
+
+quantiles_adjusted2$FY <- as.factor(quantiles_adjusted2$FY)
+
+quantiles_adjusted2 %>% 
+  ggplot(aes(x = FY, y = average_cost_two_or_more_grants, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost_two_or_more), size = 2, colour = "blue") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith more than 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=400000, size=0.4, color="black") + coord_cartesian(ylim = c(400000, 900000)) + annotate("text",x=14,y=850000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=600000,label="Adjusted\nDollars",colour="blue", size = 6)
+
+#average amount of grant dollars going to investigators who are only receiving one grant
+```
+
 
 
 ```{r echo = FALSE}
