@@ -526,6 +526,18 @@ R01_equiv_adjusted <- R01_equiv_adjusted %>%
 #creates the adjustment factor for the R01_equiv data frame using the Consumer Price Index (CPI) - this is for total dollars dispersed by the NIH per year, and the adjusted, in constant year 2000 dollars.
 ```
 
+```{r echo = FALSE}
+
+PI_ALL_COUNT_PI <- PI_ALL %>% 
+  group_by(FY) %>% 
+  mutate(COUNT_PI = length(PI)) %>% 
+  distinct(FY)
+
+#Makes a data frame that counts the number of unique investigators receiving R01 equivalent funds per year - used for a figure
+
+```
+
+
 # Federal Laboratory Funding in the 21st Century - A 15 Year Review
 Authors: Nicholas Fox (Rutgers University) & Mariana Martins (Columbia University)
 
@@ -593,7 +605,7 @@ As seen in the figure, in adjusted dollars, NIH funds awarded through R01-equvel
 
 
 
-
+-------------------
 <br>
 <br>
 <br>
@@ -618,7 +630,7 @@ As seen in the figure, in adjusted dollars, NIH funds awarded through R01-equvel
 
 
 
-
+Now for some orphan figures:
 ```{r echo = FALSE}
 
 quantiles_adjusted$FY <- as.factor(quantiles_adjusted$FY)
@@ -629,6 +641,8 @@ quantiles_adjusted %>%
 #average amount of grant dollars going to investigators who are only receiving one grant
 ```
 
+<br>
+<br>
 
 ```{r echo = FALSE}
 
@@ -640,6 +654,9 @@ quantiles_adjusted2 %>%
 #average amount of grant dollars going to investigators who are only receiving one grant
 ```
 
+<br>
+<br>
+
 
 
 ```{r echo = FALSE}
@@ -649,6 +666,9 @@ quantiles_average %>%
 
 ```
 
+<br>
+<br>
+
 ```{r echo = FALSE}
 
 quantiles %>% 
@@ -656,12 +676,18 @@ quantiles %>%
 
 ```
 
+<br>
+<br>
+
 ```{r echo = FALSE}
 
 quantiles %>%
   ggplot(aes(x = FY, y = SUM_PERCENT_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.1) + geom_smooth(aes(colour = factor(grant_dummy)), size = 1.5) + coord_cartesian(ylim = c(0, 0.015)) + fte_theme() + labs(title="Percent of total awarded dollars per investigator\n grouped by investigators with 1 or more than 1 grant", x="\nFiscal Year", y="Percent of awarded dollars\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
 
 ```
+
+<br>
+<br>
 
 ```{r echo = FALSE}
 
@@ -674,12 +700,27 @@ quantiles %>%
 #
 ```
 
+<br>
+<br>
+
 ```{r echo = FALSE}
 
 quantiles %>% 
   ggplot(aes(x = FY, y = SUM_COST_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.2) + geom_smooth(aes(colour = factor(grant_dummy)), size = 2) + coord_cartesian(ylim = c(0, 1000000)) + fte_theme() + labs(title="Total dollars awarded per investigator", x="\nFiscal Year", y="Dollars awarded\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
 
 #some figures using the quantiles data
+
+```
+
+<br>
+<br>
+
+```{r echo = FALSE}
+
+
+
+PI_ALL_COUNT_PI %>% 
+  ggplot(aes(x = FY, y = COUNT_PI, group = 1)) + geom_line(size = 2, colour = "#c0392b") + fte_theme() + labs(title="Number of unique investigators\nreceiving R01 equivalent funds per fiscal year", x="\nFiscal Year", y="Number of investigators\n") + geom_hline(yintercept=20000, size=0.4, color="black") + coord_cartesian(ylim = c(20000, 25000))
 
 ```
 
