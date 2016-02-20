@@ -528,10 +528,20 @@ R01_equiv_adjusted <- R01_equiv_adjusted %>%
 
 ```{r echo = FALSE}
 
-PI_ALL_COUNT_PI <- PI_ALL %>% 
+PI_ALL_COUNT_PI_ONE_GRANT <- PI_ALL %>% 
+  filter(NUMBER_OF_GRANTS == 1) %>% 
   group_by(FY) %>% 
   mutate(COUNT_PI = length(PI)) %>% 
   distinct(FY)
+
+PI_ALL_COUNT_PI_MORE_GRANTS <- PI_ALL %>% 
+  filter(NUMBER_OF_GRANTS != 1) %>% 
+  group_by(FY) %>% 
+  mutate(COUNT_PI_MORE_THAN_ONE = length(PI)) %>% 
+  distinct(FY) %>% 
+  select(FY, COUNT_PI_MORE_THAN_ONE)
+
+PI_ALL_COUNT_PIS <- dplyr::left_join(PI_ALL_COUNT_PI_ONE_GRANT, PI_ALL_COUNT_PI_MORE_GRANTS, by = "FY")
 
 #Makes a data frame that counts the number of unique investigators receiving R01 equivalent funds per year - used for a figure
 
@@ -631,6 +641,10 @@ As seen in the figure, in adjusted dollars, NIH funds awarded through R01-equvel
 
 
 Now for some orphan figures:
+
+<br>
+<br>
+
 ```{r echo = FALSE}
 
 quantiles_adjusted$FY <- as.factor(quantiles_adjusted$FY)
@@ -639,6 +653,16 @@ quantiles_adjusted %>%
   ggplot(aes(x = FY, y = average_cost_one_grant, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost), size = 2, colour = "blue") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=200000, size=0.4, color="black") + coord_cartesian(ylim = c(200000, 400000)) + annotate("text",x=14,y=325000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=250000,label="Adjusted\nDollars",colour="blue", size = 6)
 
 #average amount of grant dollars going to investigators who are only receiving one grant
+```
+
+<br>
+<br>
+
+```{r echo = FALSE}
+
+PI_ALL_COUNT_PIS %>% 
+  ggplot(aes(x = FY, y = COUNT_PI, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = COUNT_PI_MORE_THAN_ONE), size = 2, colour = "blue") + fte_theme() + labs(title="Number of unique investigators\nreceiving R01 equivalent funds per fiscal year", x="\nFiscal Year", y="Number of investigators\n") + geom_hline(yintercept=3000, size=0.4, color="black") + coord_cartesian(ylim = c(3000, 20000)) + annotate("text",x=13,y=15000,label="One grant",colour="#c0392b", size = 6) + annotate("text",x=13,y=8500,label="Two or more\ngrants",colour="blue", size = 6) 
+
 ```
 
 <br>
@@ -709,18 +733,6 @@ quantiles %>%
   ggplot(aes(x = FY, y = SUM_COST_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.2) + geom_smooth(aes(colour = factor(grant_dummy)), size = 2) + coord_cartesian(ylim = c(0, 1000000)) + fte_theme() + labs(title="Total dollars awarded per investigator", x="\nFiscal Year", y="Dollars awarded\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
 
 #some figures using the quantiles data
-
-```
-
-<br>
-<br>
-
-```{r echo = FALSE}
-
-
-
-PI_ALL_COUNT_PI %>% 
-  ggplot(aes(x = FY, y = COUNT_PI, group = 1)) + geom_line(size = 2, colour = "#c0392b") + fte_theme() + labs(title="Number of unique investigators\nreceiving R01 equivalent funds per fiscal year", x="\nFiscal Year", y="Number of investigators\n") + geom_hline(yintercept=20000, size=0.4, color="black") + coord_cartesian(ylim = c(20000, 25000))
 
 ```
 
