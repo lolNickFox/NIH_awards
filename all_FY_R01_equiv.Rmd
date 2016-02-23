@@ -252,63 +252,63 @@ filter_target <- c("R01", "R23", "R29", "R37")
 
 fy2014 <- fy2014 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 fy2013 <- fy2013 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 fy2012 <- fy2012 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 fy2011 <- fy2011 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 fy2010 <- fy2010 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM) 
 
 fy2009 <- fy2009 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 fy2008 <- fy2008 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 fy2007 <- fy2007 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 fy2006 <- fy2006 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 fy2005 <- fy2005 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 fy2004 <- fy2004 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 fy2003 <- fy2003 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 fy2002 <- fy2002 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 fy2001 <- fy2001 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 fy2000 <- fy2000 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, APPLICATION_ID, PI_IDS, TOTAL_COST)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
 
 #select only R01 equivalent awards and the relevent columns
 ```
@@ -357,61 +357,61 @@ R01_equiv <- R01_equiv %>%
 PI_1 <- R01_equiv %>%
   mutate(PI = PI_1) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
 
 PI_2 <- R01_equiv %>%
   filter(!is.na(PI_2)) %>% 
   mutate(PI = PI_2) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
 
 PI_3 <- R01_equiv %>% 
   filter(!is.na(PI_3)) %>%
   mutate(PI = PI_3) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
 
 PI_4 <- R01_equiv %>% 
   filter(!is.na(PI_4)) %>%
   mutate(PI = PI_4) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
 
 PI_5 <- R01_equiv %>% 
   filter(!is.na(PI_5)) %>%
   mutate(PI = PI_5) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
 
 PI_6 <- R01_equiv %>% 
   filter(!is.na(PI_6)) %>%
   mutate(PI = PI_6) %>% 
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
 
 PI_7 <- R01_equiv %>% 
   filter(!is.na(PI_7)) %>%
   mutate(PI = PI_7) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
 
 PI_8 <- R01_equiv %>% 
   filter(!is.na(PI_8)) %>%
   mutate(PI = PI_8) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
 
 PI_9 <- R01_equiv %>% 
   filter(!is.na(PI_9)) %>%
   mutate(PI = PI_9) %>% 
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
 
 PI_10 <- R01_equiv %>% 
   filter(!is.na(PI_10)) %>%
   mutate(PI = PI_10) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, PI, COST_PER_PI, PERCENT_COST_PER_PI)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
 
 PI_ALL <- bind_rows(PI_1, PI_2, PI_3, PI_4, PI_5, PI_6, PI_7, PI_8, PI_9, PI_10)
 
@@ -420,17 +420,21 @@ PI_ALL <- bind_rows(PI_1, PI_2, PI_3, PI_4, PI_5, PI_6, PI_7, PI_8, PI_9, PI_10)
 
 ```{r echo = FALSE}
 
-PI_ALL <- PI_ALL %>%
+PI_ALL_BY_PI <- PI_ALL %>%
   group_by(FY, PI) %>% 
   mutate(SUM_COST_RECEIVED = sum(COST_PER_PI), NUMBER_OF_GRANTS = n(), SUM_PERCENT_RECEIVED = sum(PERCENT_COST_PER_PI)) %>% 
   distinct(PI)
-
 #data frame with each author only appearing once per fiscal year.
+
+PI_ALL_BY_GRANT_ID <- PI_ALL %>% 
+  group_by(FY, FULL_PROJECT_NUM) %>% 
+  mutate(NUMBER_OF_AUTHORS = n()) %>% 
+  distinct(FULL_PROJECT_NUM)
 ```
 
 ```{r echo = FALSE}
 
-quantiles <- PI_ALL %>% 
+quantiles <- PI_ALL_BY_PI %>% 
   group_by(FY) %>% 
   mutate(quantile = ntile(SUM_COST_RECEIVED, 5), grant_dummy = ifelse(NUMBER_OF_GRANTS == 1, 1, 2))
 
@@ -528,13 +532,13 @@ R01_equiv_adjusted <- R01_equiv_adjusted %>%
 
 ```{r echo = FALSE}
 
-PI_ALL_COUNT_PI_ONE_GRANT <- PI_ALL %>% 
+PI_ALL_COUNT_PI_ONE_GRANT <- PI_ALL_BY_PI %>% 
   filter(NUMBER_OF_GRANTS == 1) %>% 
   group_by(FY) %>% 
   mutate(COUNT_PI = length(PI)) %>% 
   distinct(FY)
 
-PI_ALL_COUNT_PI_MORE_GRANTS <- PI_ALL %>% 
+PI_ALL_COUNT_PI_MORE_GRANTS <- PI_ALL_BY_PI %>% 
   filter(NUMBER_OF_GRANTS != 1) %>% 
   group_by(FY) %>% 
   mutate(COUNT_PI_MORE_THAN_ONE = length(PI)) %>% 
@@ -733,6 +737,35 @@ quantiles %>%
   ggplot(aes(x = FY, y = SUM_COST_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.2) + geom_smooth(aes(colour = factor(grant_dummy)), size = 2) + coord_cartesian(ylim = c(0, 1000000)) + fte_theme() + labs(title="Total dollars awarded per investigator", x="\nFiscal Year", y="Dollars awarded\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
 
 #some figures using the quantiles data
+
+```
+
+
+```{r echo = FALSE}
+
+PI_ALL_TEST <- PI_ALL %>% 
+  mutate(ARRA_DUMMY = ifelse(ARRA_FUNDED == "Y", 1, 0))
+
+PI_ALL_TEST <- PI_ALL_TEST %>% 
+  group_by(FY, PI) %>% 
+  mutate(TOTAL_ARRA = sum(ARRA_DUMMY)) %>% 
+  select(FY, PI, TOTAL_ARRA)
+
+GRANTS_AND_ARRA <- dplyr::left_join(PI_ALL_TEST, PI_ALL_BY_PI, by = c("FY", "PI"))
+
+GRANTS_AND_ARRA <- GRANTS_AND_ARRA %>% 
+  group_by(FY, PI) %>% 
+  distinct(PI)
+
+
+GRANTS_AND_ARRA <- GRANTS_AND_ARRA %>% 
+  mutate(PERCENT_ARRA = ifelse(TOTAL_ARRA >= 1, (TOTAL_ARRA / NUMBER_OF_GRANTS)*100, 0))
+
+
+GRANTS_AND_ARRA %>% 
+  filter(NUMBER_OF_GRANTS != 1) %>% 
+  ggplot(x = FY, y = PERCENT_ARRA, group = 1) + geom_point()
+
 
 ```
 
