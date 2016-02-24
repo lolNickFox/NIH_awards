@@ -763,8 +763,8 @@ GRANTS_AND_ARRA <- GRANTS_AND_ARRA %>%
 
 
 GRANTS_AND_ARRA %>% 
-  filter(NUMBER_OF_GRANTS != 1) %>% 
-  ggplot(x = FY, y = PERCENT_ARRA, group = 1) + geom_point()
+  filter(NUMBER_OF_GRANTS == 1) %>% 
+  ggplot(aes(x = FY, y = PERCENT_ARRA, group = 1 )) + geom_jitter()
 
 
 ```
