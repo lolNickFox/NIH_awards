@@ -182,9 +182,9 @@ fte_theme <- function() {
       palette <- brewer.pal("Greys", n=9)
       color.background = palette[2]
       color.grid.major = palette[3]
-      color.axis.text = palette[6]
+      color.axis.text = palette[7]
       color.axis.title = palette[7]
-      color.title = palette[9]
+      color.title = palette[8]
       
       # Begin construction of chart
       theme_bw(base_size=9) +
@@ -552,6 +552,64 @@ PI_ALL_COUNT_PIS <- dplyr::left_join(PI_ALL_COUNT_PI_ONE_GRANT, PI_ALL_COUNT_PI_
 ```
 
 
+```{r echo = FALSE}
+
+PI_ALL_TEST <- PI_ALL %>% 
+  mutate(ARRA_DUMMY = ifelse(ARRA_FUNDED == "Y", 1, 0))
+
+PI_ALL_TEST <- PI_ALL_TEST %>% 
+  group_by(FY, PI) %>% 
+  mutate(TOTAL_ARRA = sum(ARRA_DUMMY)) %>% 
+  select(FY, PI, TOTAL_ARRA)
+
+GRANTS_AND_ARRA <- dplyr::left_join(PI_ALL_TEST, PI_ALL_BY_PI, by = c("FY", "PI"))
+
+GRANTS_AND_ARRA <- GRANTS_AND_ARRA %>% 
+  group_by(FY, PI) %>% 
+  distinct(PI)
+
+
+GRANTS_AND_ARRA <- GRANTS_AND_ARRA %>% 
+  mutate(PERCENT_ARRA = ifelse(TOTAL_ARRA >= 1, (TOTAL_ARRA / NUMBER_OF_GRANTS)*100, 0))
+
+GAA_2009 <- GRANTS_AND_ARRA %>%
+  filter(FY == 2009)
+  
+GAA_2009 <- GAA_2009 %>%
+  group_by(TOTAL_ARRA, NUMBER_OF_GRANTS) %>% 
+  mutate(NUMBER_OF_INVESTIGATORS = n()) %>% 
+  select(TOTAL_ARRA, NUMBER_OF_GRANTS, NUMBER_OF_INVESTIGATORS) %>% 
+  distinct(TOTAL_ARRA, NUMBER_OF_GRANTS, NUMBER_OF_INVESTIGATORS)
+
+GAA_2010 <- GRANTS_AND_ARRA %>%
+  filter(FY == 2010)
+  
+GAA_2010 <- GAA_2010 %>% 
+  group_by(TOTAL_ARRA, NUMBER_OF_GRANTS) %>% 
+  mutate(NUMBER_OF_INVESTIGATORS = n()) %>% 
+  select(TOTAL_ARRA, NUMBER_OF_GRANTS, NUMBER_OF_INVESTIGATORS) %>% 
+  distinct(TOTAL_ARRA, NUMBER_OF_GRANTS, NUMBER_OF_INVESTIGATORS)
+
+#this creates two data.frames (GAA_2009 and GAA_2010) that creates the counts for stimulus grants
+
+```
+
+```{r echo = FALSE}
+
+ARRA_NUMBERS <- read.csv("ARRA_numbers.csv", header = TRUE, stringsAsFactors = FALSE)
+#creates new data.frame for the ARRA numbers.  
+
+ARRA_NUMBERS$GRANTS <- factor(ARRA_NUMBERS$GRANTS, levels = ARRA_NUMBERS$GRANTS[order(ARRA_NUMBERS$VALUE)])
+
+
+
+```
+
+
+
+
+
+
 # Federal Laboratory Funding in the 21st Century - A 15 Year Review
 Authors: Nicholas Fox (Rutgers University) & Mariana Martins (Columbia University)
 
@@ -600,7 +658,7 @@ Figure 2 below shows the total dollars dispersed by the NIH to R01-equvelent awa
 R01_equiv_adjusted$FY <- as.factor(R01_equiv_adjusted$FY)
 
 R01_equiv_adjusted %>% 
-  ggplot(aes(x = FY, y = TOTAL_DOLLARS, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_total_dollars), size = 2, colour = "blue") + fte_theme() + labs(title="Figure 2. Amount dispersed by NIH per year\nfor R01-equivalent awards", x="\nFiscal Year", y="Dollars\n") + geom_hline(yintercept=6000000000, size=0.4, color="black") + geom_line(colour = "red") + geom_line(aes(y = adjusted_total_dollars), colour = "blue") + annotate("text",x=14,y=9500000000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=7900000000,label="Adjusted\nDollars",colour="blue", size = 6)
+  ggplot(aes(x = FY, y = TOTAL_DOLLARS, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_total_dollars), size = 2, colour = "blue") + fte_theme() + labs(title="Figure 2. Amount dispersed by NIH per year\nfor R01-equivalent awards", x="\nFiscal Year", y="Dollars\n") + geom_hline(yintercept=6000000000, size=0.4, color="black") + geom_line(colour = "red") + geom_line(aes(y = adjusted_total_dollars), colour = "blue") + annotate("text",x=14,y=9500000000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=7900000000,label="Adjusted\nDollars",colour="#4c4cff", size = 6)
 
 ```
 
@@ -609,6 +667,58 @@ As seen in the figure, in adjusted dollars, NIH funds awarded through R01-equvel
 
 <br>
 <br>
+
+```{r echo = FALSE}
+#the chunks below are orphan figures...
+
+
+
+quantiles_adjusted$FY <- as.factor(quantiles_adjusted$FY)
+
+quantiles_adjusted %>% 
+  ggplot(aes(x = FY, y = average_cost_one_grant, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost), size = 2, colour = "blue") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=200000, size=0.4, color="black") + coord_cartesian(ylim = c(200000, 400000)) + annotate("text",x=14,y=325000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=260000,label="Adjusted\nDollars",colour="#4c4cff", size = 6)
+
+#average amount of grant dollars going to investigators who are only receiving one grant
+```
+
+<br>
+<br>
+
+```{r echo = FALSE}
+
+quantiles_adjusted2$FY <- as.factor(quantiles_adjusted2$FY)
+
+quantiles_adjusted2 %>% 
+  ggplot(aes(x = FY, y = average_cost_two_or_more_grants, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost_two_or_more), size = 2, colour = "blue") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith more than 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=400000, size=0.4, color="black") + coord_cartesian(ylim = c(400000, 900000)) + annotate("text",x=14,y=720000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=600000,label="Adjusted\nDollars",colour="#4c4cff", size = 6)
+
+#average amount of grant dollars going to investigators who are only receiving one grant
+```
+
+<br>
+<br>
+
+```{r echo = FALSE}
+
+PI_ALL_COUNT_PIS %>% 
+  ggplot(aes(x = FY, y = COUNT_PI, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = COUNT_PI_MORE_THAN_ONE), size = 2, colour = "blue") + fte_theme() + labs(title="Number of unique investigators\nreceiving R01 equivalent funds per fiscal year", x="\nFiscal Year", y="Number of investigators\n") + geom_hline(yintercept=3000, size=0.4, color="black") + coord_cartesian(ylim = c(3000, 20000)) + annotate("text",x=13,y=15000,label="One grant",colour="#c0392b", size = 6) + annotate("text",x=13,y=8500,label="Two or more\ngrants",colour="#4c4cff", size = 6) 
+
+```
+
+
+<br>
+<br>
+
+```{r echo = FALSE}
+
+p <- ARRA_NUMBERS %>% 
+  filter(FY == 2009) %>% 
+  ggplot(aes(x = GRANTS, y = VALUE, fill = GRANT_TYPE)) + geom_bar(stat = "identity", colour = "#454545") + fte_theme() + labs(title="Number of unique investigators receiving R01 equivalent funds\nby ARRA status in FY2009", x = "\nNumber of funded grants", y="Number of investigators\n") + geom_hline(yintercept=0, size=0.4, color="black") + coord_cartesian(ylim = c(0, 15000)) + scale_fill_manual(values = c("#4c4cff", "#c0392b"))
+
+suppressWarnings(print(p))
+
+```
+
+
 <br>
 <br>
 
@@ -632,40 +742,10 @@ As seen in the figure, in adjusted dollars, NIH funds awarded through R01-equvel
 <br>
 -------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-Now for some orphan figures:
-
-<br>
-<br>
-
 ```{r echo = FALSE}
 
-quantiles_adjusted$FY <- as.factor(quantiles_adjusted$FY)
-
-quantiles_adjusted %>% 
-  ggplot(aes(x = FY, y = average_cost_one_grant, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost), size = 2, colour = "blue") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=200000, size=0.4, color="black") + coord_cartesian(ylim = c(200000, 400000)) + annotate("text",x=14,y=325000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=250000,label="Adjusted\nDollars",colour="blue", size = 6)
-
-#average amount of grant dollars going to investigators who are only receiving one grant
-```
-
-<br>
-<br>
-
-```{r echo = FALSE}
-
-PI_ALL_COUNT_PIS %>% 
-  ggplot(aes(x = FY, y = COUNT_PI, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = COUNT_PI_MORE_THAN_ONE), size = 2, colour = "blue") + fte_theme() + labs(title="Number of unique investigators\nreceiving R01 equivalent funds per fiscal year", x="\nFiscal Year", y="Number of investigators\n") + geom_hline(yintercept=3000, size=0.4, color="black") + coord_cartesian(ylim = c(3000, 20000)) + annotate("text",x=13,y=15000,label="One grant",colour="#c0392b", size = 6) + annotate("text",x=13,y=8500,label="Two or more\ngrants",colour="blue", size = 6) 
+#quantiles_average %>%
+  #ggplot(aes(x = FY, y = average_sum_percent, group = quantile)) + geom_line(aes(colour = factor(quantile)), size = 2) + fte_theme() + labs(title="Percent of total awarded dollars per investigator\ngrouped by quantile", x="\nFiscal Year", y="Percent of awarded dollars\n") + geom_hline(yintercept=0.001, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
 
 ```
 
@@ -674,23 +754,8 @@ PI_ALL_COUNT_PIS %>%
 
 ```{r echo = FALSE}
 
-quantiles_adjusted2$FY <- as.factor(quantiles_adjusted2$FY)
-
-quantiles_adjusted2 %>% 
-  ggplot(aes(x = FY, y = average_cost_two_or_more_grants, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost_two_or_more), size = 2, colour = "blue") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith more than 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=400000, size=0.4, color="black") + coord_cartesian(ylim = c(400000, 900000)) + annotate("text",x=14,y=850000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=600000,label="Adjusted\nDollars",colour="blue", size = 6)
-
-#average amount of grant dollars going to investigators who are only receiving one grant
-```
-
-<br>
-<br>
-
-
-
-```{r echo = FALSE}
-
-quantiles_average %>%
-  ggplot(aes(x = FY, y = average_sum_percent, group = quantile)) + geom_line(aes(colour = factor(quantile)), size = 2) + fte_theme() + labs(title="Percent of total awarded dollars per investigator\ngrouped by quantile", x="\nFiscal Year", y="Percent of awarded dollars\n") + geom_hline(yintercept=0.001, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
+#quantiles %>% 
+  #ggplot(aes(x = FY, y = SUM_PERCENT_RECEIVED, group = quantile)) + geom_jitter(size = 0.1, alpha = 0.1) + geom_smooth(aes(colour = factor(quantile)), size = 1.5) + coord_cartesian(ylim = c(0, 0.015)) + fte_theme() + labs(title="Percent of total awarded dollars per investigator\ngrouped by quantile", x="\nFiscal Year", y="Percent of awarded dollars\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
 
 ```
 
@@ -699,18 +764,8 @@ quantiles_average %>%
 
 ```{r echo = FALSE}
 
-quantiles %>% 
-  ggplot(aes(x = FY, y = SUM_PERCENT_RECEIVED, group = quantile)) + geom_jitter(size = 0.1, alpha = 0.1) + geom_smooth(aes(colour = factor(quantile)), size = 1.5) + coord_cartesian(ylim = c(0, 0.015)) + fte_theme() + labs(title="Percent of total awarded dollars per investigator\ngrouped by quantile", x="\nFiscal Year", y="Percent of awarded dollars\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
-
-```
-
-<br>
-<br>
-
-```{r echo = FALSE}
-
-quantiles %>%
-  ggplot(aes(x = FY, y = SUM_PERCENT_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.1) + geom_smooth(aes(colour = factor(grant_dummy)), size = 1.5) + coord_cartesian(ylim = c(0, 0.015)) + fte_theme() + labs(title="Percent of total awarded dollars per investigator\n grouped by investigators with 1 or more than 1 grant", x="\nFiscal Year", y="Percent of awarded dollars\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
+#quantiles %>%
+  #ggplot(aes(x = FY, y = SUM_PERCENT_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.1) + geom_smooth(aes(colour = factor(grant_dummy)), size = 1.5) + coord_cartesian(ylim = c(0, 0.015)) + fte_theme() + labs(title="Percent of total awarded dollars per investigator\n grouped by investigators with 1 or more than 1 grant", x="\nFiscal Year", y="Percent of awarded dollars\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
 
 ```
 
@@ -720,10 +775,10 @@ quantiles %>%
 ```{r echo = FALSE}
 
 
-filter_target_quantile <- c("1", "2")
+#filter_target_quantile <- c("1", "2")
 
-quantiles %>% 
-  ggplot(aes(x = FY, y = NUMBER_OF_GRANTS, group = quantile)) + geom_jitter(aes(colour = factor(quantile)), size = 1, alpha = 0.3) + fte_theme() + labs(title="Total number of grants awarded per investigator", x="\nFiscal Year", y="Number of grants\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
+#quantiles %>% 
+  #ggplot(aes(x = FY, y = NUMBER_OF_GRANTS, group = quantile)) + geom_jitter(aes(colour = factor(quantile)), size = 1, alpha = 0.3) + fte_theme() + labs(title="Total number of grants awarded per investigator", x="\nFiscal Year", y="Number of grants\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
 
 #
 ```
@@ -733,39 +788,13 @@ quantiles %>%
 
 ```{r echo = FALSE}
 
-quantiles %>% 
-  ggplot(aes(x = FY, y = SUM_COST_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.2) + geom_smooth(aes(colour = factor(grant_dummy)), size = 2) + coord_cartesian(ylim = c(0, 1000000)) + fte_theme() + labs(title="Total dollars awarded per investigator", x="\nFiscal Year", y="Dollars awarded\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
+#quantiles %>% 
+  #ggplot(aes(x = FY, y = SUM_COST_RECEIVED, group = grant_dummy)) + geom_jitter(size = 0.1, alpha = 0.2) + geom_smooth(aes(colour = factor(grant_dummy)), size = 2) + coord_cartesian(ylim = c(0, 1000000)) + fte_theme() + labs(title="Total dollars awarded per investigator", x="\nFiscal Year", y="Dollars awarded\n") + geom_hline(yintercept=0, size=0.4, color="black") + scale_color_brewer(palette = "Set1")
 
 #some figures using the quantiles data
 
 ```
 
 
-```{r echo = FALSE}
 
-PI_ALL_TEST <- PI_ALL %>% 
-  mutate(ARRA_DUMMY = ifelse(ARRA_FUNDED == "Y", 1, 0))
-
-PI_ALL_TEST <- PI_ALL_TEST %>% 
-  group_by(FY, PI) %>% 
-  mutate(TOTAL_ARRA = sum(ARRA_DUMMY)) %>% 
-  select(FY, PI, TOTAL_ARRA)
-
-GRANTS_AND_ARRA <- dplyr::left_join(PI_ALL_TEST, PI_ALL_BY_PI, by = c("FY", "PI"))
-
-GRANTS_AND_ARRA <- GRANTS_AND_ARRA %>% 
-  group_by(FY, PI) %>% 
-  distinct(PI)
-
-
-GRANTS_AND_ARRA <- GRANTS_AND_ARRA %>% 
-  mutate(PERCENT_ARRA = ifelse(TOTAL_ARRA >= 1, (TOTAL_ARRA / NUMBER_OF_GRANTS)*100, 0))
-
-
-GRANTS_AND_ARRA %>% 
-  filter(NUMBER_OF_GRANTS == 1) %>% 
-  ggplot(aes(x = FY, y = PERCENT_ARRA, group = 1 )) + geom_jitter()
-
-
-```
 
