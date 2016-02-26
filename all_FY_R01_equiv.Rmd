@@ -661,7 +661,7 @@ Year 2000 adjusted dollars were calculated using the Consumer Price Index from t
 The Gini coefficient has been used in previous literature to characterize inieuality in income distributions (CITATION).  The coefficient ranges from 0, where income is perfectly distributed among all group members, to 1, where income is perfectly concentrated with one group member.  A larger coefficient signifies a greater income disparity.  We used the Gini coefficient to describe R01-equivelent award disparity for each fiscal year, and it can be seen in Figure 1.
 
 ```{r echo = FALSE}
-
+#figure 1
 quantiles_Gini %>% 
   ggplot(aes(x = FY, y = FY_Gini, group = 1)) + geom_line(size = 2, colour = "#c0392b") + coord_cartesian(ylim = c(0.3, 0.36)) + fte_theme() + labs(title="Figure 1. Gini coefficient within R01-equivelent awards\n2000 - 2014", x="\nFiscal Year", y="Gini coefficient\n") + geom_hline(yintercept=0.3, size=0.4, color="black")
 
@@ -673,11 +673,11 @@ As seen above, the Gini coefficient steadily falls from year 2000 until year 200
 Figure 2 below shows the total dollars dispersed by the NIH to R01-equvelent award recepients.  The red line shows the dollars reported, and the blue line shows the dollar amount in an inflation-adjusted year 2000 constant dollars.  
 
 ```{r echo = FALSE}
-
+#figure 2
 R01_equiv_adjusted$FY <- as.factor(R01_equiv_adjusted$FY)
 
 R01_equiv_adjusted %>% 
-  ggplot(aes(x = FY, y = TOTAL_DOLLARS, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_total_dollars), size = 2, colour = "blue") + fte_theme() + labs(title="Figure 2. Amount dispersed by NIH per year\nfor R01-equivalent awards", x="\nFiscal Year", y="Dollars\n") + geom_hline(yintercept=6000000000, size=0.4, color="black") + geom_line(colour = "red") + geom_line(aes(y = adjusted_total_dollars), colour = "blue") + annotate("text",x=14,y=9500000000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=7900000000,label="Adjusted\nDollars",colour="#4c4cff", size = 6)
+  ggplot(aes(x = FY, y = TOTAL_DOLLARS, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_total_dollars), size = 2, colour = "#4c4cff") + fte_theme() + labs(title="Figure 2. Amount dispersed by NIH per year\nfor R01-equivalent awards", x="\nFiscal Year", y="Dollars\n") + geom_hline(yintercept=6000000000, size=0.4, color="black") + geom_line(colour = "red") + geom_line(aes(y = adjusted_total_dollars), colour = "blue") + annotate("text",x=14,y=9500000000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=7900000000,label="Adjusted\nDollars",colour="#4c4cff", size = 6)
 
 ```
 
@@ -685,24 +685,57 @@ As seen in the figure, in adjusted dollars, NIH funds awarded through R01-equvel
 
 ### Number of investigators simultaniously supported by one or more than one R01 equivelent grants
 
+Each year, a certain number of unique PIs are funded through R01-equivelent support mechanisms.  In Figure 3 below, those PIs are differentiated by the number of awards they receive funds from annually.  
+
+```{r echo = FALSE}
+#figure 3
+PI_ALL_COUNT_PIS %>% 
+  ggplot(aes(x = FY, y = COUNT_PI, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = COUNT_PI_MORE_THAN_ONE), size = 2, colour = "#4c4cff") + fte_theme() + labs(title="Figure 3: Number of unique investigators\nreceiving R01 equivalent funds per fiscal year", x="\nFiscal Year", y="Number of investigators\n") + geom_hline(yintercept=3000, size=0.4, color="black") + coord_cartesian(ylim = c(3000, 20000)) + annotate("text",x=13,y=15000,label="One grant",colour="#c0392b", size = 6) + annotate("text",x=13,y=8500,label="Two or more\ngrants",colour="#4c4cff", size = 6) 
+
+```
+
+The number of investigators receiving funding from one R01-equivelent grant as increased from FY2000 to FY2014 (from 14,183 to 16,851).  This trend changed in 2009, where there was a sharp decrease in the number of investigators being funded by a single R01-equivelent grant.  In 2009, only 14,207 investigators were being funded by one R01 award, a decrease of 1,139 from the previous year.
+
+There has been a slight decrease in the number of investigators receiving funding from two or more R01 grants between FY2000 and FY2014 (6,278 to 5,698).  In 2009, there was a spike in the number of PIs receiving funding from more than one R01 (9,194).  
+
+### Number of investigators simultaniously supported by one or more than one R01 equivelent grants - broken down by ARRA status
+In 2009, the federal government passed a stimulus package called "The American Recovery and Reinvestment Act" (ARRA).  ARRA provided over 10 billion dollars of funding to the NIH, some of which was awarded as R01-equivelent grants in FY2009 and FY2010.  The distribution of those ARRA-funded R01-equivelent grants can be seen in Figure 4 below.
 
 
 ```{r echo = FALSE}
+#figure 4
+p <- ARRA_NUMBERS %>% 
+  ggplot(aes(x = GRANTS, y = VALUE, fill = GRANT_TYPE)) + geom_bar(stat = "identity", colour = "#454545") + fte_theme() + labs(title="Figure 4: Number of unique investigators receiving R01 equivalent funds\nby ARRA status: FY2008-FY2011", x = "\nNumber of funded grants", y="Number of investigators\n") + geom_hline(yintercept=0, size=0.4, color="black") + coord_cartesian(ylim = c(0, 18000)) + scale_fill_manual(values = c("#4c4cff", "#c0392b")) + facet_grid(. ~ FY) + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-PI_ALL_COUNT_PIS %>% 
-  ggplot(aes(x = FY, y = COUNT_PI, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = COUNT_PI_MORE_THAN_ONE), size = 2, colour = "blue") + fte_theme() + labs(title="Number of unique investigators\nreceiving R01 equivalent funds per fiscal year", x="\nFiscal Year", y="Number of investigators\n") + geom_hline(yintercept=3000, size=0.4, color="black") + coord_cartesian(ylim = c(3000, 20000)) + annotate("text",x=13,y=15000,label="One grant",colour="#c0392b", size = 6) + annotate("text",x=13,y=8500,label="Two or more\ngrants",colour="#4c4cff", size = 6) 
+suppressWarnings(print(p))
 
 ```
-<br>
-<br>
 
+In FY2009, when ARRA-funded grants were first awarded, 77.14% were awarded to PIs who were already being funded by at least 1 R01-equivelent grant.  The remaining 22.86% were awarded to investigators as their sole grant.  During this time, non-ARRA funded grants decreased for both groups from the previous year.  In sum, the distribution of ARRA-funded grants and the decrease of non-ARRA funded grants results in the FY2009 spikes seen in Figure 3.
+
+The relationship is similar in FY2010.  In this year, 64.98% of ARRA-funded grants were awarded to PIs who were already being funded by at least 1 R01-equivelent grant.  The remaining 35.02% were awarded to investigators as their sole grant.
+
+
+2010:
+Total ARRA = 3461
+Only_one = 1212
+Two or more = 2249
+
+
+<br>
+<br>
+## Discussion
+
+<br>
+<br>
+The figures below are orphan figures...
 ```{r echo = FALSE}
 #the chunks below are orphan figures...
 
 quantiles_adjusted$FY <- as.factor(quantiles_adjusted$FY)
 
 quantiles_adjusted %>% 
-  ggplot(aes(x = FY, y = average_cost_one_grant, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost), size = 2, colour = "blue") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=200000, size=0.4, color="black") + coord_cartesian(ylim = c(200000, 400000)) + annotate("text",x=14,y=325000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=260000,label="Adjusted\nDollars",colour="#4c4cff", size = 6)
+  ggplot(aes(x = FY, y = average_cost_one_grant, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost), size = 2, colour = "#4c4cff") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=200000, size=0.4, color="black") + coord_cartesian(ylim = c(200000, 400000)) + annotate("text",x=14,y=325000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=260000,label="Adjusted\nDollars",colour="#4c4cff", size = 6)
 
 #average amount of grant dollars going to investigators who are only receiving one grant
 ```
@@ -715,7 +748,7 @@ quantiles_adjusted %>%
 quantiles_adjusted2$FY <- as.factor(quantiles_adjusted2$FY)
 
 quantiles_adjusted2 %>% 
-  ggplot(aes(x = FY, y = average_cost_two_or_more_grants, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost_two_or_more), size = 2, colour = "blue") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith more than 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=400000, size=0.4, color="black") + coord_cartesian(ylim = c(400000, 900000)) + annotate("text",x=14,y=720000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=600000,label="Adjusted\nDollars",colour="#4c4cff", size = 6)
+  ggplot(aes(x = FY, y = average_cost_two_or_more_grants, group = 1)) + geom_line(size = 2, colour = "#c0392b") + geom_line(aes(y = adjusted_average_cost_two_or_more), size = 2, colour = "#4c4cff") + fte_theme() + labs(title="Average amount dispersed to investigators\nwith more than 1 R01 equivalent award", x="\nFiscal Year", y="Average dollars\n") + geom_hline(yintercept=400000, size=0.4, color="black") + coord_cartesian(ylim = c(400000, 900000)) + annotate("text",x=14,y=720000,label="Dollars",colour="#c0392b", size = 6) + annotate("text",x=14,y=600000,label="Adjusted\nDollars",colour="#4c4cff", size = 6)
 
 #average amount of grant dollars going to investigators who are only receiving one grant
 ```
@@ -730,21 +763,14 @@ quantiles_adjusted2 %>%
 <br>
 
 
-```{r echo = FALSE}
 
-p <- ARRA_NUMBERS %>% 
-  ggplot(aes(x = GRANTS, y = VALUE, fill = GRANT_TYPE)) + geom_bar(stat = "identity", colour = "#454545") + fte_theme() + labs(title="Number of unique investigators receiving R01 equivalent funds\nby ARRA status: FY2008-FY2011", x = "\nNumber of funded grants", y="Number of investigators\n") + geom_hline(yintercept=0, size=0.4, color="black") + coord_cartesian(ylim = c(0, 18000)) + scale_fill_manual(values = c("#4c4cff", "#c0392b")) + facet_grid(. ~ FY) + theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-suppressWarnings(print(p))
-
-```
 
 <br>
 <br>
 
 
 
-## Discussion
+
 
 
 
