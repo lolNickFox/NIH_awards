@@ -252,63 +252,62 @@ filter_target <- c("R01", "R23", "R29", "R37")
 
 fy2014 <- fy2014 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 
 fy2013 <- fy2013 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 
 fy2012 <- fy2012 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 
 fy2011 <- fy2011 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 
 fy2010 <- fy2010 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM) 
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME) 
 
 fy2009 <- fy2009 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 
 fy2008 <- fy2008 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 
 fy2007 <- fy2007 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 
 fy2006 <- fy2006 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 
 fy2005 <- fy2005 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 
 fy2004 <- fy2004 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
-
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 fy2003 <- fy2003 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 
 fy2002 <- fy2002 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 
 fy2001 <- fy2001 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 
 fy2000 <- fy2000 %>% 
   filter(ACTIVITY %in% filter_target) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, APPLICATION_ID, PI_IDS, TOTAL_COST, FULL_PROJECT_NUM, IC_NAME)
 
 #select only R01 equivalent awards and the relevent columns
 ```
@@ -357,61 +356,61 @@ R01_equiv <- R01_equiv %>%
 PI_1 <- R01_equiv %>%
   mutate(PI = PI_1) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM, IC_NAME)
 
 PI_2 <- R01_equiv %>%
   filter(!is.na(PI_2)) %>% 
   mutate(PI = PI_2) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM, IC_NAME)
 
 PI_3 <- R01_equiv %>% 
   filter(!is.na(PI_3)) %>%
   mutate(PI = PI_3) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM, IC_NAME)
 
 PI_4 <- R01_equiv %>% 
   filter(!is.na(PI_4)) %>%
   mutate(PI = PI_4) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM, IC_NAME)
 
 PI_5 <- R01_equiv %>% 
   filter(!is.na(PI_5)) %>%
   mutate(PI = PI_5) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM, IC_NAME)
 
 PI_6 <- R01_equiv %>% 
   filter(!is.na(PI_6)) %>%
   mutate(PI = PI_6) %>% 
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM, IC_NAME)
 
 PI_7 <- R01_equiv %>% 
   filter(!is.na(PI_7)) %>%
   mutate(PI = PI_7) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM, IC_NAME)
 
 PI_8 <- R01_equiv %>% 
   filter(!is.na(PI_8)) %>%
   mutate(PI = PI_8) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM, IC_NAME)
 
 PI_9 <- R01_equiv %>% 
   filter(!is.na(PI_9)) %>%
   mutate(PI = PI_9) %>% 
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM, IC_NAME)
 
 PI_10 <- R01_equiv %>% 
   filter(!is.na(PI_10)) %>%
   mutate(PI = PI_10) %>%
   group_by(FY, PI) %>% 
-  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM)
+  select(FY, ACTIVITY, ARRA_FUNDED, PI, COST_PER_PI, PERCENT_COST_PER_PI, FULL_PROJECT_NUM, IC_NAME)
 
 PI_ALL <- bind_rows(PI_1, PI_2, PI_3, PI_4, PI_5, PI_6, PI_7, PI_8, PI_9, PI_10)
 
@@ -716,10 +715,9 @@ In FY2009, when ARRA-funded grants were first awarded, 77.14% were awarded to PI
 The relationship is similar in FY2010.  In this year, 64.98% of ARRA-funded grants were awarded to PIs who were already being funded by at least 1 R01-equivelent grant.  The remaining 35.02% were awarded to investigators as their sole grant.
 
 
-2010:
-Total ARRA = 3461
-Only_one = 1212
-Two or more = 2249
+---Whats Next---
+Stratify funding by NIH Center.  Make proportional bar graphs (every bar = 100%) with stratification within. Do we see a change between 2008 and 2011?  Do some centers receive more ARRA funding?
+
 
 
 <br>
