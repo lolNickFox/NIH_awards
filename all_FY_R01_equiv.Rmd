@@ -429,6 +429,12 @@ PI_ALL_BY_GRANT_ID <- PI_ALL %>%
   group_by(FY, FULL_PROJECT_NUM) %>% 
   mutate(NUMBER_OF_AUTHORS = n()) %>% 
   distinct(FULL_PROJECT_NUM)
+
+GRANTS_BY_IC <- PI_ALL %>% 
+  group_by(FY, IC_NAME) %>% 
+  mutate(NUMBER_GRANTS_IC = n()) %>% 
+  distinct(IC_NAME)
+  
 ```
 
 ```{r echo = FALSE}
