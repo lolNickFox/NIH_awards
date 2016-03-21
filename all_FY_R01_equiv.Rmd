@@ -17,6 +17,12 @@ output: html_document
 #install.packages("quantmod")
 #install.packages("lubridate")
 #install.packages("data.table")
+install.packages("devtools")
+install.packages("installr") # install 
+
+#setInternet2(TRUE)
+#installr::updateR() 
+#updates R if there is a new update available.
 
 suppressMessages(library(dplyr))
 suppressMessages(library(tidyr))
@@ -30,137 +36,12 @@ suppressMessages(library(grid))
 suppressMessages(library(quantmod))
 suppressMessages(library(lubridate))
 suppressMessages(library(data.table))
+suppressMessages(library(devtools))
+dev_mode(on=T)
 #loads in all packages used in this analysis.  Find install code above.
 
 ```
 
-```{r echo = FALSE}
-Sem <- function(x) {
-  sqrt(var(x)/length(x))
-  }
-#creates function to calculate the standard error of the mean, SEM
-
-
-
-
-summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
-                      conf.interval=.95, .drop=TRUE) {
-    library(plyr)
-
-    # New version of length which can handle NA's: if na.rm==T, don't count them
-    length2 <- function (x, na.rm=FALSE) {
-        if (na.rm) sum(!is.na(x))
-        else       length(x)
-    }
-
-    # This does the summary. For each group's data frame, return a vector with
-    # N, mean, and sd
-    datac <- ddply(data, groupvars, .drop=.drop,
-      .fun = function(xx, col) {
-        c(N    = length2(xx[[col]], na.rm=na.rm),
-          mean = mean   (xx[[col]], na.rm=na.rm),
-          sd   = sd     (xx[[col]], na.rm=na.rm)
-        )
-      },
-      measurevar
-    )
-
-    # Rename the "mean" column    
-    datac <- rename(datac, c("mean" = measurevar))
-
-    datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
-
-    # Confidence interval multiplier for standard error
-    # Calculate t-statistic for confidence interval: 
-    # e.g., if conf.interval is .95, use .975 (above/below), and use df=N-1
-    ciMult <- qt(conf.interval/2 + .5, datac$N-1)
-    datac$ci <- datac$se * ciMult
-
-    return(datac)
-}
-
-
-normDataWithin <- function(data=NULL, idvar, measurevar, betweenvars=NULL,
-                           na.rm=FALSE, .drop=TRUE) {
-    library(plyr)
-
-    # Measure var on left, idvar + between vars on right of formula.
-    data.subjMean <- ddply(data, c(idvar, betweenvars), .drop=.drop,
-     .fun = function(xx, col, na.rm) {
-        c(subjMean = mean(xx[,col], na.rm=na.rm))
-      },
-      measurevar,
-      na.rm
-    )
-
-    # Put the subject means with original data
-    data <- merge(data, data.subjMean)
-
-    # Get the normalized data in a new column
-    measureNormedVar <- paste(measurevar, "_norm", sep="")
-    data[,measureNormedVar] <- data[,measurevar] - data[,"subjMean"] +
-                               mean(data[,measurevar], na.rm=na.rm)
-
-    # Remove this subject mean column
-    data$subjMean <- NULL
-
-    return(data)
-}
-
-
-summarySEwithin <- function(data=NULL, measurevar, betweenvars=NULL, withinvars=NULL,
-                            idvar=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE) {
-
-  # Ensure that the betweenvars and withinvars are factors
-  factorvars <- vapply(data[, c(betweenvars, withinvars), drop=FALSE],
-    FUN=is.factor, FUN.VALUE=logical(1))
-
-  if (!all(factorvars)) {
-    nonfactorvars <- names(factorvars)[!factorvars]
-    message("Automatically converting the following non-factors to factors: ",
-            paste(nonfactorvars, collapse = ", "))
-    data[nonfactorvars] <- lapply(data[nonfactorvars], factor)
-  }
-
-  # Get the means from the un-normed data
-  datac <- summarySE(data, measurevar, groupvars=c(betweenvars, withinvars),
-                     na.rm=na.rm, conf.interval=conf.interval, .drop=.drop)
-
-  # Drop all the unused columns (these will be calculated with normed data)
-  datac$sd <- NULL
-  datac$se <- NULL
-  datac$ci <- NULL
-
-  # Norm each subject's data
-  ndata <- normDataWithin(data, idvar, measurevar, betweenvars, na.rm, .drop=.drop)
-
-  # This is the name of the new column
-  measurevar_n <- paste(measurevar, "_norm", sep="")
-
-  # Collapse the normed data - now we can treat between and within vars the same
-  ndatac <- summarySE(ndata, measurevar_n, groupvars=c(betweenvars, withinvars),
-                      na.rm=na.rm, conf.interval=conf.interval, .drop=.drop)
-
-  # Apply correction from Morey (2008) to the standard error and confidence interval
-  #  Get the product of the number of conditions of within-S variables
-  nWithinGroups    <- prod(vapply(ndatac[,withinvars, drop=FALSE], FUN=nlevels,
-                           FUN.VALUE=numeric(1)))
-  correctionFactor <- sqrt( nWithinGroups / (nWithinGroups-1) )
-
-  # Apply the correction factor
-  ndatac$sd <- ndatac$sd * correctionFactor
-  ndatac$se <- ndatac$se * correctionFactor
-  ndatac$ci <- ndatac$ci * correctionFactor
-
-  # Combine the un-normed means with the normed results
-  merge(datac, ndatac)
-}
-
-asNumeric <- function(x) as.numeric(as.character(x))
-factorsNumeric <- function(d) modifyList(d, lapply(d[, sapply(d, is.factor)],   
-                                                   asNumeric))
-#functions that allow easy conversions of factors to numeric
-```
 
 ```{r echo = FALSE}
 read.url <- function(url, ...){
@@ -221,6 +102,9 @@ fte_theme <- function() {
 ```{r echo = FALSE}
 #FOR MAC, use the WD below:
 setwd("~/Dropbox/GitHub_master/data/NIH_awards")
+
+#FOR WINDOWS, use the Wd below:
+#setwd("C:/Users/Nick/Dropbox/GitHub_master/data/NIH_awards")
 
 ```
 
@@ -434,6 +318,8 @@ GRANTS_BY_IC <- PI_ALL %>%
   group_by(FY, IC_NAME) %>% 
   mutate(NUMBER_GRANTS_IC = n()) %>% 
   distinct(IC_NAME)
+
+
   
 ```
 
@@ -634,7 +520,7 @@ ARRA_NUMBERS$GRANTS <- factor(ARRA_NUMBERS$GRANTS, levels = ARRA_NUMBERS$GRANTS[
 
 
 
-# Federal Laboratory Funding in the 21st Century - A 15 Year Review
+# The NIH R01 Budget under the 2009 Stimulus: Implications for Future Budget Increases
 Authors: Nicholas Fox (Rutgers University) & Mariana Martins (Columbia University)
 
  <br>
@@ -642,13 +528,34 @@ Authors: Nicholas Fox (Rutgers University) & Mariana Martins (Columbia Universit
  
 ## Introduction
 
+In 1998, Congress approved a doubling of the NIH budget.  This doubling was completed in 2003 and marked as a huge success in the country's dedication to advancing scientific research.  Since then, however, the federal budget has been on a roller coaster ride, bringing the NIH with it.  Controlling for inflation using nominal FY2014 dollars, the NIH budget has shrunk from a high of $38.2 billion dollars (2003) to $30.1 billion dollars, or a 26.7% decrease (BOADI 2014 CITATION)
+
+
+
 * Over the last century, research funding from the National Institutes of Health (NIH) have supported hundreds of thousands of independant scientists at more than 2,000 universities accross the country (CITATION - NIH website).  Nearly all of the NIH's funding is provided annually in the Departments of Labor, Health and Human Services, Education, and Related Agencies appropriations act.  This act is preceeded by the annual budget presented by the President and any Congressional budget resolutions.  Typically, the federal budget needs to be passed by October 1st.  If this does not happen, the government can pass short-term "continuing resolutions" (CR) to continue funding to government agencies.
 
 * Since the year 2000, the federal budget has experienced surplus, deficit, and a historic recession.  Political battles in Congress have also caused budget deadlines to be missed, resulting in strings of CRs keeping federal agencies running.  Additionally, the budget sequestration of 2013 further hamstrung the budget of federal agencies due to the lack of the passing of a proper federal budget.
+-----
 
+Things that have happened:
+Web bubble collapse in 2000
+War on Terror: 2001-2014
+Deficit Reduction Act of 2005 (February 2006)
+Great Recession - 2008-2014
+Economic Stimulus Act of 2008 (February 2008)
+Debt Ceiling Crisis of 2011 (July 2011)
+Budget Control Act of 2011 (August 2011)
+Debt Ceiling Crisis of 2013 (Janurary 2013)
+Budget Sequestration of 2013 (March 2013)
+Government shutdown (October 1st - 16th,  2013)
+
+-----
 * The most common (and historically the oldest) source of public funding for independent investigators is the R01 (or R01 equivelent) award.  These awards allows an investigator to define the scientific objective of a project and provide funds for the specified project.  Projects are awarded to by the NIH to support specific areas of health-related research within a scope defined by the NIH and informed by the President and their scientific advisors.
 
+* In 1998, Congress under the Clinton administration approved a plan to double the NIH buget over 5 years.  In 2003, the NIH budget was twice what it was!  Since then, this surge in funding was not supported.  ((CITATIONS ON DOUBLING ERA))
+
 * So far, it is unknown how these events have affected the NIH's ability to fund independent research laboratories.  This paper describes how R01 equivelent funding has changed over time since the beginning of the 21st century.
+
 
 ## Methods
 ### Data Collection
@@ -760,7 +667,32 @@ quantiles_adjusted2 %>%
 <br>
 <br>
 
+```{r echo = FALSE}
 
+
+DOLLARS_BY_IC <- PI_ALL %>% 
+  group_by(FY, IC_NAME) %>% 
+  mutate(TOTAL_DOLLARS_IC = sum(COST_PER_PI), NUMBER_GRANTS_IC = n()) %>% 
+  distinct(IC_NAME)
+
+
+filter_ic <- c("NATIONAL CANCER INSTITUTE", "NATIONAL HEART, LUNG, AND BLOOD INSTITUTE", "NATIONAL INSTITUTE OF ALLERGY AND INFECTIOUS DISEASES", "NATIONAL INSTITUTE OF DIABETES AND DIGESTIVE AND KIDNEY DISEASES", "NATIONAL INSTITUTE OF GENERAL MEDICAL SCIENCES", "NATIONAL INSTITUTE OF MENTAL HEALTH", "NATIONAL INSTITUTE OF NEUROLOGOCAL DISORDERS AND STROKE")
+  
+DOLLARS_BY_IC <- DOLLARS_BY_IC %>% 
+  filter(IC_NAME %in% filter_ic)
+
+
+
+DOLLARS_BY_IC$IC_NAME <- factor(DOLLARS_BY_IC$IC_NAME, levels=c("NATIONAL CANCER INSTITUTE", "NATIONAL HEART, LUNG, AND BLOOD INSTITUTE", "NATIONAL INSTITUTE OF ALLERGY AND INFECTIOUS DISEASES", "NATIONAL INSTITUTE OF DIABETES AND DIGESTIVE AND KIDNEY DISEASES", "NATIONAL INSTITUTE OF GENERAL MEDICAL SCIENCES", "NATIONAL INSTITUTE OF MENTAL HEALTH", "NATIONAL INSTITUTE OF NEUROLOGOCAL DISORDERS AND STROKE"), labels=c("NCI", "NHLBI", "NIAID", "NIDDK", "NIGMS", "NIMH", "NINDS"))
+
+
+
+DOLLARS_BY_IC %>% 
+  ggplot(aes(x = FY, y = TOTAL_DOLLARS_IC, colour = IC_NAME, group = IC_NAME)) + geom_line(size = 2) + fte_theme()
+
+
+
+```
 
 
 <br>
@@ -844,6 +776,7 @@ quantiles_adjusted2 %>%
 #some figures using the quantiles data
 
 ```
+
 
 
 
